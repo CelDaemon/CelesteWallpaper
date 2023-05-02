@@ -11,17 +11,14 @@ public class Event : IDisposable
     {
         if(_disposed) throw new ObjectDisposedException(nameof(Event));
         IEvent? evt = null;
-        var stopwatch = Stopwatch.StartNew();
         while(Native.SDL.Event.Poll(ref evt))
         {
-            Debug.WriteLine($"Poll event delay: {stopwatch.ElapsedTicks}");
             switch(evt.Type)
             {
                 case EventType.Quit:
                     OnQuit?.Invoke((QuitEvent) evt);
                     break;
             }
-            stopwatch.Restart();
         }
     }
     public void Dispose()
