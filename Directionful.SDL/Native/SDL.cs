@@ -50,7 +50,7 @@ internal static unsafe class SDL
             byte* uTitle = stackalloc byte[uTitleSize];
             fixed (char* titleFixed = title)
             {
-                Encoding.UTF8.GetBytes(titleFixed, title.Length, uTitle, uTitleSize);
+                Encoding.UTF8.GetBytes(titleFixed, title.Length, uTitle, uTitleSize - 1);
             }
             *(uTitle + uTitleSize - 1) = 0;
             var ret = _CreateWindow((nint) uTitle, x, y, w, h, (uint) flags);
@@ -58,6 +58,19 @@ internal static unsafe class SDL
             return ret;
             [DllImport("SDL2", EntryPoint = "SDL_CreateWindow")]
             static extern nint _CreateWindow(nint title, int x, int y, int w, int h, uint flags);
+        }
+        public static void SetTitle(nint window, string title)
+        {
+            var uTitleSize = Encoding.UTF8.GetMaxByteCount(title.Length) + 1;
+            byte* uTitle = stackalloc byte[uTitleSize];
+            fixed (char* titleFixed = title)
+            {
+                Encoding.UTF8.GetBytes(titleFixed, title.Length, uTitle, uTitleSize - 1);
+            }
+            *(uTitle + uTitleSize - 1) = 0;
+            _SetWindowTitle(window, (nint) uTitle);
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowTitle")]
+            static extern void _SetWindowTitle(nint window, nint title);
         }
         public static void Destroy(nint window)
         {

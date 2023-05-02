@@ -10,4 +10,5 @@ evt.OnQuit = _ => running = false;
 while(running)
 {
     evt.ProcessEvents();
+    window.Title = $"Directionful - {DateTime.Now}";
 }
