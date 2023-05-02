@@ -8,6 +8,7 @@ public class Window : IDisposable
     private readonly string _title;
     private readonly Rectangle<int> _location;
     private readonly WindowFlag _flags;
+    private bool _disposed;
     public Window(string title, Rectangle<int> location, WindowFlag flags)
     {
         _title = title;
@@ -17,6 +18,8 @@ public class Window : IDisposable
     }
     public void Dispose()
     {
-
+        if(_disposed) return;
+        _disposed = true;
+        GC.SuppressFinalize(this);
     }
 }

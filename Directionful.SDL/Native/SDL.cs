@@ -31,7 +31,12 @@ internal static unsafe class SDL
                 evt = null;
                 return false;
             }
-            evt = new TestEvent();
+            var type = *(EventType*)uEvt;
+            evt = type switch
+            {
+                EventType.Quit => QuitEvent.FromData((nint)uEvt),
+                _ => UnknownEvent.FromData((nint)uEvt)
+            };
             return true;
             [DllImport("SDL2", EntryPoint = "SDL_PollEvent")]
             static extern int _PollEvent(nint evt);
