@@ -37,7 +37,12 @@
                     "publish",
                     "${workspaceFolder}/Directionful/Directionful.csproj",
                     "/property:GenerateFullPaths=true",
-                    "/consoleloggerparameters:NoSummary"
+                    "/consoleloggerparameters:NoSummary",
+                    "-r",
+                    "win-x64",
+                    "-c",
+                    "Release",
+                    "--self-contained"
                 ],
                 "problemMatcher": "$msCompile"
             },
