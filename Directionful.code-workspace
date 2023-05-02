@@ -1,0 +1,79 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "files.exclude": {
+            "**/.git": true,
+            "**/.svn": true,
+            "**/.hg": true,
+            "**/CVS": true,
+            "**/.DS_Store": true,
+            "**/Thumbs.db": true
+        },
+    },
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "label": "build",
+                "command": "dotnet",
+                "type": "process",
+                "args": [
+                    "build",
+                    "${workspaceFolder}/Directionful/Directionful.csproj",
+                    "/property:GenerateFullPaths=true",
+                    "/consoleloggerparameters:NoSummary"
+                ],
+                "problemMatcher": "$msCompile"
+            },
+            {
+                "label": "publish",
+                "command": "dotnet",
+                "type": "process",
+                "args": [
+                    "publish",
+                    "${workspaceFolder}/Directionful/Directionful.csproj",
+                    "/property:GenerateFullPaths=true",
+                    "/consoleloggerparameters:NoSummary"
+                ],
+                "problemMatcher": "$msCompile"
+            },
+            {
+                "label": "watch",
+                "command": "dotnet",
+                "type": "process",
+                "args": [
+                    "watch",
+                    "run",
+                    "--project",
+                    "${workspaceFolder}/Directionful/Directionful.csproj"
+                ],
+                "problemMatcher": "$msCompile"
+            }
+        ]
+    },
+    "launch": {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": ".NET Core Launch (console)",
+                "type": "coreclr",
+                "request": "launch",
+                "preLaunchTask": "build",
+                "program": "${workspaceFolder}/Directionful/bin/Debug/net7.0/Directionful.dll",
+                "args": [],
+                "cwd": "${workspaceFolder}/Directionful",
+                "console": "internalConsole",
+                "stopAtEntry": false
+            },
+            {
+                "name": ".NET Core Attach",
+                "type": "coreclr",
+                "request": "attach"
+            }
+        ]
+    }
+}
