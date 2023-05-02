@@ -1,11 +1,18 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace Directionful.SDL;
 
+[DebuggerDisplay("SDL ({_flags})")]
 public class SDL
 {
-    public SDL()
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private readonly InitFlag _flags;
+    public SDL(InitFlag flags)
     {
-        Native.SDL.Init(InitFlag.Video);
+        if(flags.HasFlag(InitFlag.Video)) flags |= InitFlag.Events;
+        _flags = flags;
+        Native.SDL.Init(flags);
     }
+    public InitFlag Flags {get => _flags; }
 }
