@@ -4,8 +4,8 @@ public class Event : IDisposable
 {
     public delegate void QuitHandler(QuitEvent evt);
     public QuitHandler? OnQuit;
+    private readonly Video.Video? _video;
     private bool _disposed;
-    private Video.Video? _video;
     internal Event(Video.Video? video)
     {
         _video = video;

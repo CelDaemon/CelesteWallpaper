@@ -12,7 +12,7 @@ public class SDL : IDisposable
         _flags = flags;
         Native.SDL.Init(flags);
         if(flags.HasFlag(InitFlag.Video)) _video = new();
-        if(flags.HasFlag(InitFlag.Events)) _event = new();
+        if(flags.HasFlag(InitFlag.Events)) _event = new(_video);
     }
     public InitFlag Flags {get => _flags; }
     public Video.Video Video {get => _video ?? throw new Exception("Video subsystem is not initialized"); }

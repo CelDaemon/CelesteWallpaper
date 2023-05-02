@@ -35,6 +35,7 @@ internal static unsafe class SDL
             evt = type switch
             {
                 EventType.Quit => QuitEvent.FromData((nint)uEvt),
+                EventType.Window => WindowEvent.FromData((nint)uEvt),
                 _ => UnknownEvent.FromData((nint)uEvt)
             };
             return true;
