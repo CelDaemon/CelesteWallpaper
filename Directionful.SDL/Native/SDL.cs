@@ -72,6 +72,18 @@ internal static unsafe class SDL
             [DllImport("SDL2", EntryPoint = "SDL_SetWindowTitle")]
             static extern void _SetWindowTitle(nint window, nint title);
         }
+        public static void SetPosition(nint window, int x, int y)
+        {
+            _SetWindowPosition(window, x, y);
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowPosition")]
+            static extern void _SetWindowPosition(nint window, int x, int y);
+        }
+        public static void SetSize(nint window, int width, int height)
+        {
+            _SetWindowSize(window, width, height);
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowSize")]
+            static extern void _SetWindowSize(nint window, int width, int height);
+        }
         public static void Destroy(nint window)
         {
             _DestroyWindow(window);
