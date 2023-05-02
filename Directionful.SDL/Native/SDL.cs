@@ -10,6 +10,12 @@ internal static unsafe class SDL
         [DllImport("SDL2", EntryPoint = "SDL_Init")]
         static extern int _Init(uint flags);
     }
+    public static void Quit()
+    {
+        _Quit();
+        [DllImport("SDL2", EntryPoint = "SDL_Quit")]
+        static extern void _Quit();
+    }
     public static string? GetError()
     {
         return Marshal.PtrToStringAnsi(_GetError());
