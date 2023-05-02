@@ -84,6 +84,14 @@ internal static unsafe class SDL
             [DllImport("SDL2", EntryPoint = "SDL_SetWindowSize")]
             static extern void _SetWindowSize(nint window, int width, int height);
         }
+        public static uint GetID(nint window)
+        {
+            var ret = _GetWindowID(window);
+            if(ret == 0) throw new SDLException("Failed to get window ID");
+            return ret;
+            [DllImport("SDL2", EntryPoint = "SDL_GetWindowID")]
+            static extern uint _GetWindowID(nint window);
+        }
         public static void Destroy(nint window)
         {
             _DestroyWindow(window);
