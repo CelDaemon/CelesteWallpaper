@@ -1,5 +1,4 @@
-using System.Diagnostics;
-using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using Directionful.SDL.Event;
 using Directionful.SDL.Util;
 
@@ -56,9 +55,9 @@ public class Window : IDisposable
     public uint ID { get => _id; }
     private int HitTester(nint window, nint area, nint data)
     {
-        return (int) _hitTester!.Invoke(this, Point<int>.FromData(area), data);
+        return (int)_hitTester!.Invoke(this, Point<int>.FromData(area), data);
     }
-
+    [SupportedOSPlatform("windows")]
     public HitTestHandler? HitTest
     {
         set

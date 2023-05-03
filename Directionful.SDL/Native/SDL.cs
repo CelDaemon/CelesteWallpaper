@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Text;
 using Directionful.SDL.Event;
 using Directionful.SDL.Video;
@@ -101,6 +102,7 @@ public static unsafe class SDL
         }
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int HitTestHandler(nint window, nint area, nint data);
+        [SupportedOSPlatform("windows")]
         public static void SetHitTest(nint window, HitTestHandler callback, nint data)
         {
             if(_SetWindowHitTest(window, Marshal.GetFunctionPointerForDelegate(callback), data) != 0) throw new SDLException("Failed to set hit test");
