@@ -5,11 +5,13 @@ namespace Directionful.SDL.Video;
 
 public class Window : IDisposable
 {
+    public delegate HitTestResult HitTestHandler(Window window, Point<int> point);
     private readonly Video.UnregisterWindow _unregisterHandler;
     private readonly nint _handle;
     private readonly uint _id;
     private string _title;
     private Rectangle<int> _location;
+    private HitTestHandler? _hitTest;
     private bool _disposed;
     internal Window(Video.UnregisterWindow unregisterHandler, string title, Rectangle<int> location, WindowFlag flags)
     {
@@ -49,6 +51,18 @@ public class Window : IDisposable
         }
     }
     public uint ID {get => _id; }
+    public HitTestHandler? HitTest
+    {
+        set
+        {
+            if(_disposed) throw new ObjectDisposedException(nameof(Window));
+            if(value == _hitTest) return;
+            if(value == null && _hitTest == null) Native.SDL.Window.RemoveHitTest(_handle);
+            else if(_hitTest == null) Native.SDL.Window.SetHitTest(_handle, ID);
+            _hitTest = value;
+        }
+        get => _hitTest;
+    }
     public void HandleEvent(WindowEvent evt)
     {
         if(_disposed) throw new ObjectDisposedException(nameof(Window));

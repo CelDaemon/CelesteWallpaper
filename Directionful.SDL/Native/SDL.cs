@@ -1,8 +1,9 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Directionful.SDL.Event;
+using Directionful.SDL.Util;
 using Directionful.SDL.Video;
 
 namespace Directionful.SDL.Native;
@@ -98,6 +99,28 @@ internal static unsafe class SDL
             _DestroyWindow(window);
             [DllImport("SDL2", EntryPoint = "SDL_DestroyWindow")]
             static extern void _DestroyWindow(nint window);
+        }
+        
+        public static void SetHitTest(nint window, uint windowID)
+        {
+            [UnmanagedCallersOnly]
+            static int HitTest(nint window, nint area, nint data)
+            {
+                var windowID = (uint) data;
+                var point = Point<int>.FromData(area);
+                var mWindow = Directionful.SDL.SDL.Instance.Video.GetWindow(windowID);
+                return (int) mWindow.HitTest!.Invoke(mWindow, point);
+            }
+            delegate*unmanaged<nint, nint, nint, int> callback = &HitTest;
+            if(_SetWindowHitTest(window, (nint)callback, (nint) windowID) != 0) throw new SDLException("Failed to set hit test");
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowHitTest")]
+            static extern int _SetWindowHitTest(nint window, nint callback, nint data);
+        }
+        public static void RemoveHitTest(nint window)
+        {
+            if(_SetWindowHitTest(window, nint.Zero, nint.Zero) != 0) throw new SDLException("Failed to remove hit test");
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowHitTest")]
+            static extern int _SetWindowHitTest(nint window, nint callback, nint data);
         }
     }
     public static string? GetError()

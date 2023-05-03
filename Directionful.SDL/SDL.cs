@@ -2,12 +2,16 @@ namespace Directionful.SDL;
 
 public class SDL : IDisposable
 {
+    private static SDL? _instance;
+    public static SDL Instance {get => _instance ?? throw new NullReferenceException(); }
     private readonly InitFlag _flags;
     private readonly Video.Video? _video;
     private readonly Event.Event? _event;
     private bool _disposed;
     public SDL(InitFlag flags)
     {
+        if(_instance != null) throw new NotSupportedException();
+        _instance = this;
         if(flags.HasFlag(InitFlag.Video)) flags |= InitFlag.Events;
         _flags = flags;
         Native.SDL.Init(flags);
