@@ -8,7 +8,7 @@ using Directionful.SDL.Video;
 
 namespace Directionful.SDL.Native;
 
-internal static unsafe class SDL
+public static unsafe class SDL
 {
     public static void Init(InitFlag flags)
     {
@@ -100,19 +100,11 @@ internal static unsafe class SDL
             [DllImport("SDL2", EntryPoint = "SDL_DestroyWindow")]
             static extern void _DestroyWindow(nint window);
         }
-        
-        public static void SetHitTest(nint window, uint windowID)
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int HitTestHandler(nint window, nint area, nint data);
+        public static void SetHitTest(nint window, HitTestHandler callback, nint data)
         {
-            [UnmanagedCallersOnly]
-            static int HitTest(nint window, nint area, nint data)
-            {
-                var windowID = (uint) data;
-                var point = Point<int>.FromData(area);
-                var mWindow = Directionful.SDL.SDL.Instance.Video.GetWindow(windowID);
-                return (int) mWindow.HitTest!.Invoke(mWindow, point);
-            }
-            delegate*unmanaged<nint, nint, nint, int> callback = &HitTest;
-            if(_SetWindowHitTest(window, (nint)callback, (nint) windowID) != 0) throw new SDLException("Failed to set hit test");
+            if(_SetWindowHitTest(window, Marshal.GetFunctionPointerForDelegate(callback), data) != 0) throw new SDLException("Failed to set hit test");
             [DllImport("SDL2", EntryPoint = "SDL_SetWindowHitTest")]
             static extern int _SetWindowHitTest(nint window, nint callback, nint data);
         }
