@@ -115,6 +115,21 @@ public static unsafe class SDL
             static extern int _SetWindowHitTest(nint window, nint callback, nint data);
         }
     }
+    public static class ScreenSaver
+    {
+        public static void Enable()
+        {
+            _EnableScreenSaver();
+            [DllImport("SDL2", EntryPoint = "SDL_EnableScreenSaver")]
+            static extern void _EnableScreenSaver();
+        }
+        public static void Disable()
+        {
+            _DisableScreenSaver();
+            [DllImport("SDL2", EntryPoint = "SDL_DisableScreenSaver")]
+            static extern void _DisableScreenSaver();
+        }
+    }
     public static string? GetError()
     {
         return Marshal.PtrToStringAnsi(_GetError());

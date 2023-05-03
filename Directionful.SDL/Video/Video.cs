@@ -6,7 +6,8 @@ public class Video : IDisposable
 {
     internal delegate void UnregisterWindow(uint id);
     private bool _disposed;
-    public Dictionary<uint, Window> _windows = new();
+    private readonly Dictionary<uint, Window> _windows = new();
+    private bool _screenSaverEnabled = true;
 
     public Window CreateWindow(string title, Rectangle<int> location, WindowFlag flags)
     {
@@ -14,8 +15,18 @@ public class Video : IDisposable
         _windows[window.ID] = window;
         return window;
     }
-
+    public bool ScreenSaverEnabled
+    {
+        get => _screenSaverEnabled;
+        set
+        {
+            if (value) Native.SDL.ScreenSaver.Enable();
+            else Native.SDL.ScreenSaver.Disable();
+            _screenSaverEnabled = value;
+        }
+    }
     internal Window GetWindow(uint id) => _windows[id];
+
 
     public void Dispose()
     {
