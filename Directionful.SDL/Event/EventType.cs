@@ -12,7 +12,7 @@ public enum EventType : uint
     LocaleChanged,
     DisplayEvent = 0x150,
     Window = 0x200,
-    SysW,
+    SystemWindowManager,
     KeyDown,
     KeyUp = 0x300,
     TextEditing,
