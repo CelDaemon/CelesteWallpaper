@@ -1,15 +1,12 @@
 namespace Directionful.SDL.Event;
 
-public readonly partial record struct QuitEvent : IEvent
+public unsafe readonly partial record struct QuitEvent : IEvent
 {
-    static partial void FromData(ref QuitEvent evt, nint data)
+    public static QuitEvent FromData(nint data)
     {
-        unsafe
-        {
-            var uData = (byte*)data;
-            var type = *(EventType*)uData;
-            var timestamp = *(uint*)(uData+4);
-            evt = evt with {Type = type, Timestamp = timestamp};
-        }
+        var uData = (byte*)data;
+        var type = *(EventType*)uData;
+        var timestamp = *(uint*)(uData+4);
+        return new QuitEvent(type, timestamp);
     }
 }
