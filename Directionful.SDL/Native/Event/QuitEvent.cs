@@ -9,7 +9,7 @@ public readonly partial record struct QuitEvent : IEvent
             var uData = (byte*)data;
             var type = *(EventType*)uData;
             var timestamp = *(uint*)(uData+4);
-            evt = new QuitEvent(type, timestamp);
+            evt = evt with {Type = type, Timestamp = timestamp};
         }
     }
 }
