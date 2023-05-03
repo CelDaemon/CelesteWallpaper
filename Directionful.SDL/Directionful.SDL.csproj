@@ -31,4 +31,10 @@
       <TargetPath>libSDL2.so</TargetPath>
     </Content>
   </ItemGroup>
+  <ItemGroup Condition="$(RuntimeIdentifier) == 'linux-x64' Or $(RuntimeIdentifier) == ''">
+    <Content Include="lib/libSDL2_image.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libSDL2_image.so</TargetPath>
+    </Content>
+  </ItemGroup>
 </Project>
