@@ -8,7 +8,6 @@ using var sdl = new SDL(InitFlag.Video);
 var window = sdl.Video.CreateWindow("Directionful", new Rectangle<int>(100, 100, 1280, 720), WindowFlag.Resizable);
 window.HitTest = (window, area, data) =>
 {
-    Debug.WriteLine(sdl.Flags);
     return HitTestResult.Draggable;
 };
 var evt = sdl.Event;
@@ -28,9 +27,8 @@ while(running)
         lastFpsTimestamp = current;
         lastFpsIdx = 0;
         Debug.WriteLine(fps);
-        Debug.WriteLine(sdl.Video.Clipboard);
     }
     evt.ProcessEvents();
-    window.Title = $"Directionful - {DateTime.Now}";
+    window.Title = $"Directionful - {sdl.Video.Clipboard}";
     lastFpsIdx++;
 }
