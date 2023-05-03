@@ -1,9 +1,7 @@
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
 using Directionful.SDL.Event;
-using Directionful.SDL.Util;
 using Directionful.SDL.Video;
 
 namespace Directionful.SDL.Native;
@@ -37,6 +35,7 @@ public static unsafe class SDL
             {
                 EventType.Quit => QuitEvent.FromData((nint)uEvt),
                 EventType.Window => WindowEvent.FromData((nint)uEvt),
+                EventType.ClipboardUpdate => ClipboardEvent.FromData((nint)uEvt),
                 _ => UnknownEvent.FromData((nint)uEvt)
             };
             return true;
@@ -128,6 +127,38 @@ public static unsafe class SDL
             _DisableScreenSaver();
             [DllImport("SDL2", EntryPoint = "SDL_DisableScreenSaver")]
             static extern void _DisableScreenSaver();
+        }
+    }
+    public static class Clipboard
+    {
+        public static void SetText(string text)
+        {
+            var uTextSize = Encoding.UTF8.GetMaxByteCount(text.Length) + 1;
+            byte* uText = stackalloc byte[uTextSize];
+            fixed(char* textFixed = text)
+            {
+                Encoding.UTF8.GetBytes(textFixed, text.Length, uText, uTextSize - 1);
+            }
+            *(uText + uTextSize - 1) = 0;
+            if(_SetClipboardText((nint) uText) != 0) throw new SDLException("Failed to set clipboard");
+            [DllImport("SDL2", EntryPoint = "SDL_SetClipboardText")]
+            static extern int _SetClipboardText(nint text);
+        }
+        public static string? GetText()
+        {
+            var uText = _GetClipboardText();
+            if(uText == nint.Zero) throw new SDLException("Failed to get clipboard");
+            var text = Marshal.PtrToStringUTF8(uText);
+            if(string.IsNullOrEmpty(text)) return null;
+            return text;
+            [DllImport("SDL2", EntryPoint = "SDL_GetClipboardText")]
+            static extern nint _GetClipboardText();
+        }
+        public static void ClearText()
+        {
+            if(_SetClipboardText(0) != 0) throw new SDLException("Failed to set clipboard");
+            [DllImport("SDL2", EntryPoint = "SDL_SetClipboardText")]
+            static extern int _SetClipboardText(nint text);
         }
     }
     public static string? GetError()

@@ -28,6 +28,7 @@ while(running)
         lastFpsTimestamp = current;
         lastFpsIdx = 0;
         Debug.WriteLine(fps);
+        Debug.WriteLine(sdl.Video.Clipboard);
     }
     evt.ProcessEvents();
     window.Title = $"Directionful - {DateTime.Now}";

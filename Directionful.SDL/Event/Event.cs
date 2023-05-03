@@ -25,6 +25,9 @@ public class Event : IDisposable
                     var nEvt = (WindowEvent) evt;
                     _video?.GetWindow(nEvt.WindowID).HandleEvent(nEvt);
                     break;
+                case EventType.ClipboardUpdate:
+                    _video?.HandleEvent((ClipboardEvent) evt);
+                    break;
             }
         }
     }
