@@ -140,6 +140,30 @@ public static unsafe class SDL
             [DllImport("SDL2", EntryPoint = "SDL_HideWindow")]
             static extern void _HideWindow(nint window);
         }
+        public static void Maximize(nint window)
+        {
+            _MaximizeWindow(window);
+            [DllImport("SDL2", EntryPoint = "SDL_MaximizeWindow")]
+            static extern void _MaximizeWindow(nint window);
+        }
+        public static void Minimize(nint window)
+        {
+            _MinimizeWindow(window);
+            [DllImport("SDL2", EntryPoint = "SDL_MinimizeWindow")]
+            static extern void _MinimizeWindow(nint window);
+        }
+        public static void Restore(nint window)
+        {
+            _RestoreWindow(window);
+            [DllImport("SDL2", EntryPoint = "SDL_RestoreWindow")]
+            static extern void _RestoreWindow(nint window);
+        }
+        public static void SetFullscreen(nint window, WindowFlag flags)
+        {
+            if(_SetWindowFullscreen(window, flags) != 0) throw new SDLException("Failed to set fullscreen");
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowFullscreen")]
+            static extern int _SetWindowFullscreen(nint window, WindowFlag flags);
+        }
     }
     public static class ScreenSaver
     {

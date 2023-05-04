@@ -113,6 +113,21 @@ public class Window : IDisposable
             _hidden = value;
         }
     }
+    public void Maximize()
+    {
+        if(_disposed) throw new ObjectDisposedException(nameof(Window));
+        Native.SDL.Window.Maximize(_handle);
+    }
+    public void Minimize()
+    {
+        if(_disposed) throw new ObjectDisposedException(nameof(Window));
+        Native.SDL.Window.Minimize(_handle);
+    }
+    public void Restore()
+    {
+        if(_disposed) throw new ObjectDisposedException(nameof(Window));
+        Native.SDL.Window.Restore(_handle);
+    }
     public void HandleEvent(WindowEvent evt)
     {
         if (_disposed) throw new ObjectDisposedException(nameof(Window));
