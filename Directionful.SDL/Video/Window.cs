@@ -13,14 +13,18 @@ public class Window : IDisposable
     private readonly uint _id;
     private string _title;
     private Rectangle<int> _location;
+    private Size<int> _minSize;
+    private Size<int> _maxSize;
     private HitTestHandler? _hitTester;
     private Native.SDL.Window.HitTestHandler? _internalHitTester;
+    private bool _hidden;
     private bool _disposed;
     internal Window(Video.UnregisterWindow unregisterHandler, string title, Rectangle<int> location, WindowFlag flags)
     {
         _unregisterHandler = unregisterHandler;
         _title = title;
         _location = location;
+        _hidden = flags.HasFlag(WindowFlag.Hidden);
         _handle = Native.SDL.Window.Create("test", location.X, location.Y, location.Width, location.Height, flags);
         _id = Native.SDL.Window.GetID(_handle);
     }
@@ -73,6 +77,40 @@ public class Window : IDisposable
                 _internalHitTester = HitTester;
                 Native.SDL.Window.SetHitTest(_handle, _internalHitTester, 0);
             }
+        }
+    }
+    public Size<int> MinimumSize
+    {
+        get => _minSize;
+        set
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(Window));
+            if(_minSize == value) return;
+            Native.SDL.Window.SetMinimumSize(_handle, value);
+            _minSize = value;
+        }
+    }
+    public Size<int> MaximumSize
+    {
+        get => _maxSize;
+        set
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(Window));
+            if(_maxSize == value) return;
+            Native.SDL.Window.SetMaximumSize(_handle, value);
+            _maxSize = value;
+        }
+    }
+    public bool Hidden
+    {
+        get => _hidden;
+        set
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(Window));
+            if(_hidden == value) return;
+            if(value) Native.SDL.Window.Hide(_handle);
+            else Native.SDL.Window.Show(_handle);
+            _hidden = value;
         }
     }
     public void HandleEvent(WindowEvent evt)

@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text;
 using Directionful.SDL.Event;
+using Directionful.SDL.Util;
 using Directionful.SDL.Video;
 
 namespace Directionful.SDL.Native;
@@ -114,6 +115,30 @@ public static unsafe class SDL
             if(_SetWindowHitTest(window, nint.Zero, nint.Zero) != 0) throw new SDLException("Failed to remove hit test");
             [DllImport("SDL2", EntryPoint = "SDL_SetWindowHitTest")]
             static extern int _SetWindowHitTest(nint window, nint callback, nint data);
+        }
+        public static void SetMinimumSize(nint window, Size<int> size)
+        {
+            _SetWindowMimimumSize(window, size.Width, size.Height);
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowMinimumSize")]
+            static extern void _SetWindowMimimumSize(nint window, int w, int h);
+        }
+        public static void SetMaximumSize(nint window, Size<int> size)
+        {
+            _SetWindowMaximumSize(window, size.Width, size.Height);
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowMaxiumumSize")]
+            static extern void _SetWindowMaximumSize(nint window, int w, int h);
+        }
+        public static void Show(nint window)
+        {
+            _ShowWindow(window);
+            [DllImport("SDL2", EntryPoint = "SDL_ShowWindow")]
+            static extern void _ShowWindow(nint window);
+        }
+        public static void Hide(nint window)
+        {
+            _HideWindow(window);
+            [DllImport("SDL2", EntryPoint = "SDL_HideWindow")]
+            static extern void _HideWindow(nint window);
         }
     }
     public static class ScreenSaver
