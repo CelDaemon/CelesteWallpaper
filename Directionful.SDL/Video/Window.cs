@@ -18,6 +18,7 @@ public class Window : IDisposable
     private HitTestHandler? _hitTester;
     private Native.SDL.Window.HitTestHandler? _internalHitTester;
     private bool _hidden;
+    private WindowDisplayState _displayState;
     private bool _disposed;
     internal Window(Video.UnregisterWindow unregisterHandler, string title, Rectangle<int> location, WindowFlag flags)
     {
@@ -25,6 +26,8 @@ public class Window : IDisposable
         _title = title;
         _location = location;
         _hidden = flags.HasFlag(WindowFlag.Hidden);
+        if(flags.HasFlag(WindowFlag.Maximized)) _displayState = WindowDisplayState.Maximized;
+        else if (flags.HasFlag(WindowFlag.Minimized)) _displayState = WindowDisplayState.Minimized;
         _handle = Native.SDL.Window.Create("test", location.X, location.Y, location.Width, location.Height, flags);
         _id = Native.SDL.Window.GetID(_handle);
     }
@@ -113,20 +116,27 @@ public class Window : IDisposable
             _hidden = value;
         }
     }
-    public void Maximize()
+    public WindowDisplayState DisplayState
     {
-        if(_disposed) throw new ObjectDisposedException(nameof(Window));
-        Native.SDL.Window.Maximize(_handle);
-    }
-    public void Minimize()
-    {
-        if(_disposed) throw new ObjectDisposedException(nameof(Window));
-        Native.SDL.Window.Minimize(_handle);
-    }
-    public void Restore()
-    {
-        if(_disposed) throw new ObjectDisposedException(nameof(Window));
-        Native.SDL.Window.Restore(_handle);
+        get => _displayState;
+        set
+        {
+            if(_disposed) throw new ObjectDisposedException(nameof(Window));
+            if(_displayState == value) return;
+            switch(value)
+            {
+                case WindowDisplayState.Maximized:
+                    Native.SDL.Window.Maximize(_handle);
+                    break;
+                case WindowDisplayState.Minimized:
+                    Native.SDL.Window.Minimize(_handle);
+                    break;
+                case WindowDisplayState.Normal:
+                    Native.SDL.Window.Restore(_handle);
+                    break;
+            }
+            _displayState = value;
+        }
     }
     public void HandleEvent(WindowEvent evt)
     {

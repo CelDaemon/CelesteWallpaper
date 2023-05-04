@@ -7,7 +7,7 @@ GCSettings.LatencyMode = GCLatencyMode.LowLatency;
 using var sdl = new SDL(InitFlag.Video);
 var window = sdl.Video.CreateWindow("Directionful", new Rectangle<int>(100, 100, 1280, 720), WindowFlag.Resizable);
 window.MinimumSize = new Size<int>(600, 600);
-window.Maximize();
+window.DisplayState = WindowDisplayState.Maximized;
 // if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 // {
 //     window.HitTest = (window, area, data) =>
