@@ -36,7 +36,7 @@ public static unsafe class SDL
             {
                 EventType.Quit => QuitEvent.FromData((nint)uEvt),
                 EventType.Window => WindowEvent.FromData((nint)uEvt),
-                EventType.ClipboardUpdate => ClipboardEvent.FromData((nint)uEvt),
+                EventType.ClipboardUpdate => ClipboardUpdateEvent.FromData((nint)uEvt),
                 _ => UnknownEvent.FromData((nint)uEvt)
             };
             return true;
