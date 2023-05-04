@@ -158,8 +158,15 @@ public static unsafe class SDL
             [DllImport("SDL2", EntryPoint = "SDL_RestoreWindow")]
             static extern void _RestoreWindow(nint window);
         }
-        public static void SetFullscreen(nint window, WindowFlag flags)
+        public static void SetFullscreen(nint window, FullscreenState state)
         {
+            var flags = state switch
+            {
+                FullscreenState.None => WindowFlag.None,
+                FullscreenState.Fullscreen => WindowFlag.Fullscreen,
+                FullscreenState.Borderless => WindowFlag.Borderless,
+                _ => throw new ArgumentException("Unknown fullscreen state", nameof(state))
+            };
             if(_SetWindowFullscreen(window, flags) != 0) throw new SDLException("Failed to set fullscreen");
             [DllImport("SDL2", EntryPoint = "SDL_SetWindowFullscreen")]
             static extern int _SetWindowFullscreen(nint window, WindowFlag flags);

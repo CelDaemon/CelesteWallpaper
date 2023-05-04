@@ -19,6 +19,7 @@ public class Window : IDisposable
     private Native.SDL.Window.HitTestHandler? _internalHitTester;
     private bool _hidden;
     private WindowDisplayState _displayState;
+    private FullscreenState _fullscreenState;
     private bool _disposed;
     internal Window(Video.UnregisterWindow unregisterHandler, string title, Rectangle<int> location, WindowFlag flags)
     {
@@ -28,6 +29,8 @@ public class Window : IDisposable
         _hidden = flags.HasFlag(WindowFlag.Hidden);
         if(flags.HasFlag(WindowFlag.Maximized)) _displayState = WindowDisplayState.Maximized;
         else if (flags.HasFlag(WindowFlag.Minimized)) _displayState = WindowDisplayState.Minimized;
+        if (flags.HasFlag(WindowFlag.Fullscreen)) _fullscreenState = FullscreenState.Fullscreen;
+        if (flags.HasFlag(WindowFlag.FullscreenDesktop)) _fullscreenState = FullscreenState.Borderless;
         _handle = Native.SDL.Window.Create("test", location.X, location.Y, location.Width, location.Height, flags);
         _id = Native.SDL.Window.GetID(_handle);
     }
@@ -136,6 +139,17 @@ public class Window : IDisposable
                     break;
             }
             _displayState = value;
+        }
+    }
+    public FullscreenState FullscreenState
+    {
+        get => _fullscreenState;
+        set
+        {
+            if(_disposed) throw new ObjectDisposedException(nameof(Window));
+            if(_fullscreenState == value) return;
+            Native.SDL.Window.SetFullscreen(_handle, value);
+            _fullscreenState = value;
         }
     }
     public void HandleEvent(WindowEvent evt)
