@@ -164,7 +164,7 @@ public static unsafe class SDL
             {
                 FullscreenState.None => WindowFlag.None,
                 FullscreenState.Fullscreen => WindowFlag.Fullscreen,
-                FullscreenState.Borderless => WindowFlag.Borderless,
+                FullscreenState.Borderless => WindowFlag.FullscreenDesktop,
                 _ => throw new ArgumentException("Unknown fullscreen state", nameof(state))
             };
             if(_SetWindowFullscreen(window, flags) != 0) throw new SDLException("Failed to set fullscreen");
