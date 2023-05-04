@@ -5,15 +5,15 @@ namespace Directionful.SDL.Video;
 
 public class Video : IDisposable
 {
+    public delegate void ClipboardUpdateHandler(ClipboardUpdateEvent evt);
+    /// <remarks>
+    ///   Don't rely on this event, it's not triggered on x11
+    /// </remarks>
+    public ClipboardUpdateHandler? OnClipboardUpdate;
     internal delegate void UnregisterWindow(uint id);
     private bool _disposed;
     private readonly Dictionary<uint, Window> _windows = new();
     private bool _screenSaverEnabled = true;
-    private string? _clipboard;
-    public Video()
-    {
-        _clipboard = Native.SDL.Clipboard.GetText();
-    }
 
     public Window CreateWindow(string title, Rectangle<int> location, WindowFlag flags)
     {
@@ -33,6 +33,10 @@ public class Video : IDisposable
             _screenSaverEnabled = value;
         }
     }
+    ///
+    /// <remarks>
+    ///   SLOW, don't use this multiple times per frame
+    /// </remarks>
     public string? Clipboard
     {
         set
@@ -40,16 +44,14 @@ public class Video : IDisposable
             if(_disposed) throw new ObjectDisposedException(nameof(Video));
             if(value != null) Native.SDL.Clipboard.SetText(value);
             else Native.SDL.Clipboard.ClearText();
-            _clipboard = value;
         }
-        get => _clipboard;
+        get
+        {
+            if(_disposed) throw new ObjectDisposedException(nameof(Video));
+            return Native.SDL.Clipboard.GetText();
+        }
     }
     internal Window GetWindow(uint id) => _windows[id];
-
-    internal void HandleEvent(ClipboardEvent _)
-    {
-        _clipboard = Native.SDL.Clipboard.GetText();
-    }
 
 
     public void Dispose()
@@ -61,5 +63,10 @@ public class Video : IDisposable
         {
             window.Dispose();
         }
+    }
+
+    internal void HandleEvent(ClipboardUpdateEvent evt)
+    {
+        OnClipboardUpdate?.Invoke(evt);
     }
 }
