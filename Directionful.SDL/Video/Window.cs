@@ -87,11 +87,7 @@ public class Window : IDisposable
             case WindowEventType.SizeChanged:
                 _location = _location with { Width = evt.Data1, Height = evt.Data2 };
                 break;
-            case WindowEventType.FocusGained:
-                Debug.WriteLine("Focus");
-                break;
         }
-        Debug.WriteLine("WindowEvent");
     }
     public void Dispose()
     {
