@@ -22,9 +22,9 @@ jobs:
           name: directionful-linux
           path: Directionful/bin/Release/net7.0/linux-x64/publish
       - name: Create artifact
-        run: tar -C Directionful/bin/Release/net7.0/linux-x64/publish -acvf directionful-linux.tar.gz *
+        run: tar -C Directionful/bin/Release/net7.0/linux-x64/publish -acvf directionful-linux-${{github.event.release.tag_name}}.tar.gz . --transform s/^\./directionful-linux-${{github.event.release.tag_name}}/
       - name: Release
-        run: gh release upload ${{ github.event.release.tag_name }} directionful-linux.tar.gz
+        run: gh release upload ${{ github.event.release.tag_name }} directionful-linux-${{github.event.release.tag_name}}.tar.gz
         env:
           GH_TOKEN: ${{ github.token }}
   build-windows:
@@ -43,8 +43,8 @@ jobs:
           name: directionful-windows
           path: Directionful/bin/Release/net7.0/win-x64/publish
       - name: Create artifact
-        run: compress-archive ./Directionful/bin/Release/net7.0/win-x64/publish/* directionful-windows.zip
+        run: compress-archive ./Directionful/bin/Release/net7.0/win-x64/publish/* directionful-windows-${{github.event.release.tag_name}}.zip
       - name: Release
-        run: gh release upload ${{ github.event.release.tag_name }} directionful-windows.zip
+        run: gh release upload ${{ github.event.release.tag_name }} directionful-windows-${{github.event.release.tag_name}}.zip
         env:
           GH_TOKEN: ${{ github.token }}
