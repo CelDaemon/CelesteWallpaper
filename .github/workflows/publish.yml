@@ -1,4 +1,4 @@
-name: Publish (Linux)
+name: Publish
 on:
   push:
     branches: main
@@ -16,14 +16,16 @@ jobs:
         run: sudo apt-get install clang zlib1g-dev
       - name: Publish
         run: dotnet publish ./Directionful/Directionful.csproj -r linux-x64 -c Release --self-contained
+      - name: Create artifact
+        run: tar acf directionful-linux.tar.gz Directionful/bin/Release/net7.0/win-x64/publish
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
           name: directionful-linux
-          path: ./Directionful/bin/Release/net7.0/linux-x64/publish
+          path: directionful-linux.tar.gz
       - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
+        run: gh release upload ${{ github.event.release.tag_name }} directionful-linux.tar.gz
+        if: ${{github.event_name == 'release'}}
   build-windows:
     runs-on: windows-latest
     name: Publish on Windows
@@ -34,11 +36,15 @@ jobs:
         uses: actions/setup-dotnet@v3
       - name: Publish
         run: dotnet publish ./Directionful/Directionful.csproj -r win-x64 -c Release --self-contained
+      - name: Create artifact
+        run: tar acf directionful-windows.zip Directionful/bin/Release/net7.0/win-x64/publish
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
-          name: directionful-linux
-          path: ./Directionful/bin/Release/net7.0/win-x64/publish
+          name: directionful-windows
+          path: directionful-windows.zip
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: directionful-windows.zip
