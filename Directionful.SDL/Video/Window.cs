@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Runtime.Versioning;
 using Directionful.SDL.Event;
 using Directionful.SDL.Util;
@@ -78,11 +77,11 @@ public class Window : IDisposable
             if (value == _hitTester) return;
             var wasNull = _hitTester == null;
             _hitTester = value;
-            if (value == null) Native.SDL.Window.RemoveHitTest(_handle);
+            if (value == null) Native.SDL.Window.SetHitTest(_handle, null, nint.Zero);
             else if (wasNull)
             {
                 _internalHitTester = HitTester;
-                Native.SDL.Window.SetHitTest(_handle, _internalHitTester, 0);
+                Native.SDL.Window.SetHitTest(_handle, _internalHitTester, nint.Zero);
             }
         }
     }
@@ -184,5 +183,6 @@ public class Window : IDisposable
         _disposed = true;
         GC.SuppressFinalize(this);
         _unregisterHandler.Invoke(ID);
+        Native.SDL.Window.Destroy(_handle);
     }
 }

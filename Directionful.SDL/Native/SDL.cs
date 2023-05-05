@@ -105,15 +105,9 @@ public static unsafe class SDL
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int HitTestHandler(nint window, nint area, nint data);
         [SupportedOSPlatform("windows")]
-        public static void SetHitTest(nint window, HitTestHandler callback, nint data)
+        public static void SetHitTest(nint window, HitTestHandler? callback, nint data)
         {
-            if(_SetWindowHitTest(window, Marshal.GetFunctionPointerForDelegate(callback), data) != 0) throw new SDLException("Failed to set hit test");
-            [DllImport("SDL2", EntryPoint = "SDL_SetWindowHitTest")]
-            static extern int _SetWindowHitTest(nint window, nint callback, nint data);
-        }
-        public static void RemoveHitTest(nint window)
-        {
-            if(_SetWindowHitTest(window, nint.Zero, nint.Zero) != 0) throw new SDLException("Failed to remove hit test");
+            if(_SetWindowHitTest(window, callback != null ? Marshal.GetFunctionPointerForDelegate(callback) : nint.Zero, data) != 0) throw new SDLException("Failed to set hit test");
             [DllImport("SDL2", EntryPoint = "SDL_SetWindowHitTest")]
             static extern int _SetWindowHitTest(nint window, nint callback, nint data);
         }
