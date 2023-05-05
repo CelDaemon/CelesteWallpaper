@@ -173,6 +173,41 @@ public static unsafe class SDL
             static extern int _SetWindowOpacity(nint window, float opacity);
         }
     }
+    public static class Renderer
+    {
+        public static nint Create(nint window, int index, RenderFlag flags)
+        {
+            var renderer = _CreateRenderer(window, index, (uint) flags);
+            if(renderer == 0) throw new SDLException("Failed to create renderer");
+            return renderer;
+            [DllImport("SDL2", EntryPoint = "SDL_CreateRenderer")]
+            static extern nint _CreateRenderer(nint window, int index, uint flags);
+        }
+        public static void Destroy(nint renderer)
+        {
+            _DestroyRenderer(renderer);
+            [DllImport("SDL2", EntryPoint = "SDL_DestroyRenderer")]
+            static extern void _DestroyRenderer(nint renderer);
+        }
+        public static void Present(nint renderer)
+        {
+            _RenderPresent(renderer);
+            [DllImport("SDL2", EntryPoint = "SDL_RenderPresent")]
+            static extern void _RenderPresent(nint renderer);
+        }
+        public static void SetDrawColor(nint renderer, Color color)
+        {
+            if(_SetRenderDrawColor(renderer, color.R, color.G, color.B, color.A) != 0) throw new SDLException("Failed to set draw color");
+            [DllImport("SDL2", EntryPoint = "SDL_SetRenderDrawColor")]
+            static extern int _SetRenderDrawColor(nint renderer, byte r, byte g, byte b, byte a);
+        }
+        public static void Clear(nint renderer)
+        {
+            if(_RenderClear(renderer) != 0) throw new SDLException("Failed to clear screen");
+            [DllImport("SDL2", EntryPoint = "SDL_RenderClear")]
+            static extern int _RenderClear(nint renderer);
+        }
+    }
     public static class ScreenSaver
     {
         public static void Enable()
