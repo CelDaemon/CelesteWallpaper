@@ -17,7 +17,7 @@ jobs:
       - name: Publish
         run: dotnet publish ./Directionful/Directionful.csproj -r linux-x64 -c Release --self-contained
       - name: Create artifact
-        run: tar acf directionful-linux.tar.gz Directionful/bin/Release/net7.0/win-x64/publish
+        run: tar acf directionful-linux.tar.gz Directionful/bin/Release/net7.0/linux-x64/publish
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
