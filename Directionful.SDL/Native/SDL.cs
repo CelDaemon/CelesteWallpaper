@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
@@ -170,6 +171,12 @@ public static unsafe class SDL
             if(_SetWindowFullscreen(window, flags) != 0) throw new SDLException("Failed to set fullscreen");
             [DllImport("SDL2", EntryPoint = "SDL_SetWindowFullscreen")]
             static extern int _SetWindowFullscreen(nint window, WindowFlag flags);
+        }
+        public static void SetOpacity(nint window, float opacity)
+        {
+            if(_SetWindowOpacity(window, opacity) != 0) throw new SDLException("Failed to set window opacity");
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowOpacity")]
+            static extern int _SetWindowOpacity(nint window, float opacity);
         }
     }
     public static class ScreenSaver

@@ -20,6 +20,7 @@ public class Window : IDisposable
     private bool _hidden;
     private WindowDisplayState _displayState;
     private FullscreenState _fullscreenState;
+    private float _opacity = 1;
     private bool _disposed;
     internal Window(Video.UnregisterWindow unregisterHandler, string title, Rectangle<int> location, WindowFlag flags)
     {
@@ -150,6 +151,17 @@ public class Window : IDisposable
             if(_fullscreenState == value) return;
             Native.SDL.Window.SetFullscreen(_handle, value);
             _fullscreenState = value;
+        }
+    }
+    public float Opacity
+    {
+        get => _opacity;
+        set
+        {
+            if(_disposed) throw new ObjectDisposedException(nameof(Window));
+            if(_opacity == value) return;
+            Native.SDL.Window.SetOpacity(_handle, value);
+            _opacity = value;
         }
     }
     public void HandleEvent(WindowEvent evt)

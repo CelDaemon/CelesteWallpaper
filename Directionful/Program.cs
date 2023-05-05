@@ -6,16 +6,7 @@ using Directionful.SDL.Video;
 GCSettings.LatencyMode = GCLatencyMode.LowLatency;
 using var sdl = new SDL(InitFlag.Video);
 var window = sdl.Video.CreateWindow("Directionful", new Rectangle<int>(100, 100, 1280, 720), WindowFlag.Resizable);
-window.MinimumSize = new Size<int>(600, 600);
-window.DisplayState = WindowDisplayState.Maximized;
-window.FullscreenState = FullscreenState.Borderless;
-// if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-// {
-//     window.HitTest = (window, area, data) =>
-//     {
-//         return HitTestResult.Draggable;
-//     };
-// }
+window.Opacity = 0.5f;
 var evt = sdl.Event;
 var running = true;
 evt.OnQuit = _ => running = false;
