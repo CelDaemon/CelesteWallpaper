@@ -32,7 +32,7 @@ public class Window : IDisposable
         else if (flags.HasFlag(WindowFlag.Minimized)) _displayState = WindowDisplayState.Minimized;
         if (flags.HasFlag(WindowFlag.Fullscreen)) _fullscreenState = FullscreenState.Fullscreen;
         if (flags.HasFlag(WindowFlag.FullscreenDesktop)) _fullscreenState = FullscreenState.Borderless;
-        _handle = Native.SDL.Window.Create("test", location.X, location.Y, location.Width, location.Height, flags);
+        _handle = Native.SDL.Window.Create(title, location.X, location.Y, location.Width, location.Height, flags);
         _id = Native.SDL.Window.GetID(_handle);
         _renderer = new Renderer(_handle, RenderFlag.PresentVSync);
     }
