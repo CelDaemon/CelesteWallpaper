@@ -1,0 +1,8 @@
+name: Name
+run-name: ${{github.actor}} test
+on: [workflow_run]
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - run: echo "Hiii :D"
