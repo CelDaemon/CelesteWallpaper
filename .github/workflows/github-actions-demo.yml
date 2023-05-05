@@ -6,13 +6,9 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
-              with:
-                ref: dev
-            - run: git pull
-            - uses: actions/checkout@v3
-            - run: git pull
+            - run: git fetch dev:dev
             - run: |
                 git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
                 git config --local user.name "github-actions[bot]"
-            - run: git merge --ff-only origin/dev
+            - run: git merge --ff-only dev
             - run: git push
