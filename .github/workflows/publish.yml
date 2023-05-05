@@ -1,8 +1,5 @@
 name: Publish (Linux)
 on:
-  pull_request:
-    types: [opened, synchronize]
-    branches: main
   push:
     branches: main
 run-name: Publish '${{github.event.head_commit.message}}'
@@ -24,3 +21,6 @@ jobs:
         with:
           name: directionful-linux
           path: ./Directionful/bin/Release/net7.0/linux-x64/publish
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
