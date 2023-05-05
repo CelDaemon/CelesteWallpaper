@@ -6,7 +6,7 @@ public class SDLException : Exception
 
     private static string Build(string message)
     {
-        var error = Native.SDL.GetError();
+        var error = Native.SDL.Error.Get();
         return $"{message}{(string.IsNullOrEmpty(error) ? string.Empty : $" ({error})")}";
     }
 }
