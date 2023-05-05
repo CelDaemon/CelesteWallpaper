@@ -14,4 +14,4 @@ jobs:
                 git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
                 git config --local user.name "github-actions[bot]"
             - run: git merge --ff-only dev
-            - uses: git push
+            - run: git push
