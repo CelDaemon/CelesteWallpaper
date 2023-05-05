@@ -4,7 +4,7 @@ on:
     branches: main
 run-name: Publish '${{github.event.head_commit.message}}'
 jobs:
-  build:
+  build-ubuntu:
     runs-on: ubuntu-22.04
     name: Publish on Ubuntu
     steps:
@@ -21,6 +21,24 @@ jobs:
         with:
           name: directionful-linux
           path: ./Directionful/bin/Release/net7.0/linux-x64/publish
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+  build-windows:
+    runs-on: windows-latest
+    name: Publish on Windows
+    steps:
+      - name: Clone
+        uses: actions/checkout@v3
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v3
+      - name: Publish
+        run: dotnet publish ./Directionful/Directionful.csproj -r win-x64 -c Release --self-contained
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: directionful-linux
+          path: ./Directionful/bin/Release/net7.0/win-x64/publish
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
