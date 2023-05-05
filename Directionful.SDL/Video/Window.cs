@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Runtime.Versioning;
 using Directionful.SDL.Event;
 using Directionful.SDL.Util;
@@ -11,6 +10,7 @@ public class Window : IDisposable
     private readonly Video.UnregisterWindow _unregisterHandler;
     private readonly nint _handle;
     private readonly uint _id;
+    private readonly Renderer _renderer;
     private string _title;
     private Rectangle<int> _location;
     private Size<int> _minSize;
@@ -34,6 +34,7 @@ public class Window : IDisposable
         if (flags.HasFlag(WindowFlag.FullscreenDesktop)) _fullscreenState = FullscreenState.Borderless;
         _handle = Native.SDL.Window.Create("test", location.X, location.Y, location.Width, location.Height, flags);
         _id = Native.SDL.Window.GetID(_handle);
+        _renderer = new Renderer(_handle, RenderFlag.PresentVSync);
     }
     public string Title
     {
@@ -78,11 +79,11 @@ public class Window : IDisposable
             if (value == _hitTester) return;
             var wasNull = _hitTester == null;
             _hitTester = value;
-            if (value == null) Native.SDL.Window.RemoveHitTest(_handle);
+            if (value == null) Native.SDL.Window.SetHitTest(_handle, null, nint.Zero);
             else if (wasNull)
             {
                 _internalHitTester = HitTester;
-                Native.SDL.Window.SetHitTest(_handle, _internalHitTester, 0);
+                Native.SDL.Window.SetHitTest(_handle, _internalHitTester, nint.Zero);
             }
         }
     }
@@ -164,6 +165,7 @@ public class Window : IDisposable
             _opacity = value;
         }
     }
+    public Renderer Renderer => _renderer;
     public void HandleEvent(WindowEvent evt)
     {
         if (_disposed) throw new ObjectDisposedException(nameof(Window));
@@ -184,5 +186,6 @@ public class Window : IDisposable
         _disposed = true;
         GC.SuppressFinalize(this);
         _unregisterHandler.Invoke(ID);
+        Native.SDL.Window.Destroy(_handle);
     }
 }

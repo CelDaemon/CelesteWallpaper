@@ -5,8 +5,8 @@ using Directionful.SDL.Util;
 using Directionful.SDL.Video;
 GCSettings.LatencyMode = GCLatencyMode.LowLatency;
 using var sdl = new SDL(InitFlag.Video);
-var window = sdl.Video.CreateWindow("Directionful", new Rectangle<int>(100, 100, 1280, 720), WindowFlag.Resizable);
-window.Opacity = 0.5f;
+using var window = sdl.Video.CreateWindow("Directionful", new Rectangle<int>(100, 100, 1280, 720), WindowFlag.Resizable);
+using var renderer = window.Renderer;
 var evt = sdl.Event;
 var running = true;
 evt.OnQuit = _ => running = false;
@@ -28,4 +28,6 @@ while (running)
     evt.ProcessEvents();
     window.Title = $"Directionful - {sdl.Video.Clipboard}";
     lastFpsIdx++;
+    renderer.Clear(Color.Blue);
+    renderer.Present();
 }
