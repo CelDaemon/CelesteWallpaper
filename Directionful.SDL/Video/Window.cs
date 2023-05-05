@@ -13,14 +13,25 @@ public class Window : IDisposable
     private readonly uint _id;
     private string _title;
     private Rectangle<int> _location;
+    private Size<int> _minSize;
+    private Size<int> _maxSize;
     private HitTestHandler? _hitTester;
     private Native.SDL.Window.HitTestHandler? _internalHitTester;
+    private bool _hidden;
+    private WindowDisplayState _displayState;
+    private FullscreenState _fullscreenState;
+    private float _opacity = 1;
     private bool _disposed;
     internal Window(Video.UnregisterWindow unregisterHandler, string title, Rectangle<int> location, WindowFlag flags)
     {
         _unregisterHandler = unregisterHandler;
         _title = title;
         _location = location;
+        _hidden = flags.HasFlag(WindowFlag.Hidden);
+        if(flags.HasFlag(WindowFlag.Maximized)) _displayState = WindowDisplayState.Maximized;
+        else if (flags.HasFlag(WindowFlag.Minimized)) _displayState = WindowDisplayState.Minimized;
+        if (flags.HasFlag(WindowFlag.Fullscreen)) _fullscreenState = FullscreenState.Fullscreen;
+        if (flags.HasFlag(WindowFlag.FullscreenDesktop)) _fullscreenState = FullscreenState.Borderless;
         _handle = Native.SDL.Window.Create("test", location.X, location.Y, location.Width, location.Height, flags);
         _id = Native.SDL.Window.GetID(_handle);
     }
@@ -73,6 +84,84 @@ public class Window : IDisposable
                 _internalHitTester = HitTester;
                 Native.SDL.Window.SetHitTest(_handle, _internalHitTester, 0);
             }
+        }
+    }
+    public Size<int> MinimumSize
+    {
+        get => _minSize;
+        set
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(Window));
+            if(_minSize == value) return;
+            Native.SDL.Window.SetMinimumSize(_handle, value);
+            _minSize = value;
+        }
+    }
+    public Size<int> MaximumSize
+    {
+        get => _maxSize;
+        set
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(Window));
+            if(_maxSize == value) return;
+            Native.SDL.Window.SetMaximumSize(_handle, value);
+            _maxSize = value;
+        }
+    }
+    public bool Hidden
+    {
+        get => _hidden;
+        set
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(Window));
+            if(_hidden == value) return;
+            if(value) Native.SDL.Window.Hide(_handle);
+            else Native.SDL.Window.Show(_handle);
+            _hidden = value;
+        }
+    }
+    public WindowDisplayState DisplayState
+    {
+        get => _displayState;
+        set
+        {
+            if(_disposed) throw new ObjectDisposedException(nameof(Window));
+            if(_displayState == value) return;
+            switch(value)
+            {
+                case WindowDisplayState.Maximized:
+                    Native.SDL.Window.Maximize(_handle);
+                    break;
+                case WindowDisplayState.Minimized:
+                    Native.SDL.Window.Minimize(_handle);
+                    break;
+                case WindowDisplayState.Normal:
+                    Native.SDL.Window.Restore(_handle);
+                    break;
+            }
+            _displayState = value;
+        }
+    }
+    public FullscreenState FullscreenState
+    {
+        get => _fullscreenState;
+        set
+        {
+            if(_disposed) throw new ObjectDisposedException(nameof(Window));
+            if(_fullscreenState == value) return;
+            Native.SDL.Window.SetFullscreen(_handle, value);
+            _fullscreenState = value;
+        }
+    }
+    public float Opacity
+    {
+        get => _opacity;
+        set
+        {
+            if(_disposed) throw new ObjectDisposedException(nameof(Window));
+            if(_opacity == value) return;
+            Native.SDL.Window.SetOpacity(_handle, value);
+            _opacity = value;
         }
     }
     public void HandleEvent(WindowEvent evt)
