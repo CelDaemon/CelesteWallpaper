@@ -12,12 +12,20 @@ public class Renderer : IDisposable
     }
     public void Clear(Color color)
     {
+        if(_disposed) throw new ObjectDisposedException(nameof(Renderer));
         Native.SDL.Renderer.SetDrawColor(_handle, color);
         Native.SDL.Renderer.Clear(_handle);
     }
     public void Present()
     {
+        if(_disposed) throw new ObjectDisposedException(nameof(Renderer));
         Native.SDL.Renderer.Present(_handle);
+    }
+    public void FillRectangle(Rectangle<float> rect, Color color)
+    {
+        if(_disposed) throw new ObjectDisposedException(nameof(Renderer));
+        Native.SDL.Renderer.SetDrawColor(_handle, color);
+        Native.SDL.Renderer.FillRectangle(_handle, rect);
     }
     public void Dispose()
     {

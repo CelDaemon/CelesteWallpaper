@@ -28,5 +28,6 @@ while (running)
     lastFpsIdx++;
     evt.ProcessEvents();
     renderer.Clear(Color.Purple);
+    renderer.FillRectangle(new Rectangle<float>(100, 100, 400, 400), Color.Black);
     renderer.Present();
 }
