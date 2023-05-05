@@ -22,7 +22,7 @@ jobs:
           name: directionful-linux
           path: Directionful/bin/Release/net7.0/linux-x64/publish
       - name: Create artifact
-        run: tar -C Directionful/bin/Release/net7.0/linux-x64/publish -acvf directionful-linux.tar.gz .
+        run: tar -C Directionful/bin/Release/net7.0/linux-x64/publish -acvf directionful-linux.tar.gz *
       - name: Release
         run: gh release upload ${{ github.event.release.tag_name }} directionful-linux.tar.gz
         env:
