@@ -25,9 +25,8 @@ while (running)
         lastFpsIdx = 0;
         Debug.WriteLine(fps);
     }
-    evt.ProcessEvents();
-    window.Title = $"Directionful - {sdl.Video.Clipboard}";
     lastFpsIdx++;
-    renderer.Clear(Color.Blue);
+    evt.ProcessEvents();
+    renderer.Clear(Color.Purple);
     renderer.Present();
 }
