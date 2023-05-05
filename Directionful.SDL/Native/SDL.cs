@@ -207,6 +207,14 @@ public static unsafe class SDL
             [DllImport("SDL2", EntryPoint = "SDL_RenderClear")]
             static extern int _RenderClear(nint renderer);
         }
+        public static void FillRectangle(nint renderer, Rectangle<float> rect)
+        {
+            var uRect = stackalloc float[4];
+            rect.ToData(uRect);
+            if(_RenderFillRectF(renderer, (nint)uRect) != 0) throw new SDLException("Failed to fill rectangle");
+            [DllImport("SDL2", EntryPoint = "SDL_RenderFillRectF")]
+            static extern int _RenderFillRectF(nint renderer, nint rect);
+        }
     }
     public static class ScreenSaver
     {
