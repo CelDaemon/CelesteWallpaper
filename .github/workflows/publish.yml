@@ -1,0 +1,25 @@
+name: Publish (Linux)
+on:
+  pull_request:
+    types: [opened, synchronize]
+  push:
+    branches: main
+run-name: Publish '${{github.event.head_commit.message}}'
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    name: Publish on Ubuntu
+    steps:
+      - name: Clone
+        uses: actions/checkout@v3
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v3
+      - name: Install requirements
+        run: sudo apt-get install clang zlib1g-dev
+      - name: Publish
+        run: dotnet publish ./Directionful/Directionful.csproj -r linux-x64 -c Release --self-contained
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: directionful-linux
+          path: ./Directionful/bin/Release/net7.0/linux-x64/publish
