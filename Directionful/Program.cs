@@ -3,3 +3,4 @@ using Directionful.SDL;
 
 GCSettings.LatencyMode = GCLatencyMode.LowLatency;
 using var sdl = new SDL();
+using var video = sdl.Video;

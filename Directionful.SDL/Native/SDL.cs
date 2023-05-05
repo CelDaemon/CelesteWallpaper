@@ -3,7 +3,7 @@ using Directionful.SDL.Native.Flag;
 
 namespace Directionful.SDL.Native;
 
-public static unsafe class SDL
+internal static unsafe class SDL
 {
     public static void Init(InitFlag flags)
     {
