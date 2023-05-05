@@ -13,4 +13,4 @@ jobs:
       - name: Setup DotNet
         uses: actions/setup-dotnet@v3
       - name: Build Directionful
-        run: dotnet build --project ./Directionful/Directionful.csproj
+        run: dotnet build ./Directionful/Directionful.csproj
