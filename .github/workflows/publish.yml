@@ -3,6 +3,8 @@ on:
   push:
     branches: [main, develop]
   release:
+    types:
+      created
 jobs:
   build-ubuntu:
     runs-on: ubuntu-22.04
@@ -22,11 +24,13 @@ jobs:
           name: directionful-linux
           path: Directionful/bin/Release/net7.0/linux-x64/publish
       - name: Create artifact
-        run: tar acf directionful-linux.tar.gz -C Directionful/bin/Release/net7.0/linux-x64/publish *
+        run: tar -C Directionful/bin/Release/net7.0/linux-x64/publish -acvf directionful-linux.tar.gz .
         if: ${{github.event_name == 'release'}}
       - name: Release
         run: gh release upload ${{ github.event.release.tag_name }} directionful-linux.tar.gz
         if: ${{github.event_name == 'release'}}
+        env:
+          GH_TOKEN: ${{ github.token }}
   build-windows:
     runs-on: windows-latest
     name: Publish on Windows
@@ -43,7 +47,7 @@ jobs:
           name: directionful-windows
           path: Directionful/bin/Release/net7.0/win-x64/publish
       - name: Create artifact
-        run: tar acf directionful-windows.zip -C Directionful/bin/Release/net7.0/win-x64/publish *
+        run: tar -C Directionful/bin/Release/net7.0/win-x64/publish -acvf directionful-window.zip .
         if: ${{github.event_name == 'release'}}
       - name: Release
         run: gh release upload ${{ github.event.release.tag_name }} directionful-windows.zip
