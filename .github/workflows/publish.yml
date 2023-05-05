@@ -2,6 +2,7 @@ name: Publish
 on:
   push:
     branches: [main, develop]
+  release:
 jobs:
   build-ubuntu:
     runs-on: ubuntu-22.04
