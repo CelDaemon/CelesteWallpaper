@@ -131,9 +131,9 @@ internal static unsafe class SDL
         }
         public static void Flash(nint window, FlashOperation operation)
         {
-            if(_Flash(window, (int) operation) != 0) throw new SDLException("Failed to flash window");
+            if(_FlashWindow(window, (int) operation) != 0) throw new SDLException("Failed to flash window");
             [DllImport("SDL2", EntryPoint = "SDL_FlashWindow")]
-            static extern int _Flash(nint window, int operation);
+            static extern int _FlashWindow(nint window, int operation);
         }
         public static uint GetID(nint window)
         {
@@ -142,6 +142,18 @@ internal static unsafe class SDL
             return ret;
             [DllImport("SDL2", EntryPoint = "SDL_GetWindowID")]
             static extern uint _GetWindowID(nint window);
+        }
+        public static void SetPosition(nint window, int x, int y)
+        {
+            _SetWindowPosition(window, x, y);
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowPosition")]
+            static extern void _SetWindowPosition(nint window, int x, int y);
+        }
+        public static void SetSize(nint window, int w, int h)
+        {
+            _SetWindowSize(window, w, h);
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowSize")]
+            static extern void _SetWindowSize(nint window, int w, int h);
         }
     }
     public static class Event

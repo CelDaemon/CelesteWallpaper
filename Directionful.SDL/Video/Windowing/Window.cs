@@ -12,6 +12,7 @@ public class Window : IDisposable
     public Window(VideoSystem video, string title, Rectangle<int> location, bool resizable = true, bool borderless = false, bool alwaysOnTop = false, bool hidden = false, DisplayState displayState = default, FullscreenState fullscreenState = default)
     {
         _video = video;
+        _location = location;
         _resizable = resizable;
         _borderless = borderless;
         _alwaysOnTop = alwaysOnTop;
@@ -51,13 +52,25 @@ public class Window : IDisposable
     }
     public void Flash(bool untilFocussed)
     {
-        if(_disposed) throw new ObjectDisposedException(nameof(Window));
+        if (_disposed) throw new ObjectDisposedException(nameof(Window));
         Native.SDL.Window.Flash(_handle, untilFocussed ? FlashOperation.UntilFocussed : FlashOperation.Briefly);
     }
     public void CancelFlash()
     {
-        if(_disposed) throw new ObjectDisposedException(nameof(Window));
-        Native.SDL.Window.Flash(_handle,  FlashOperation.Cancel);
+        if (_disposed) throw new ObjectDisposedException(nameof(Window));
+        Native.SDL.Window.Flash(_handle, FlashOperation.Cancel);
+    }
+    public Rectangle<int> Location
+    {
+        get => _location;
+        set
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(Window));
+            if (_location == value) return;
+            if (_location.X != value.X || _location.Y != value.Y) Native.SDL.Window.SetPosition(_handle, value.X, value.Y);
+            if (_location.Width != value.Width || _location.Height != value.Height) Native.SDL.Window.SetSize(_handle, value.Width, value.Height);
+            _location = value;
+        }
     }
     public bool Resizable
     {
@@ -148,7 +161,7 @@ public class Window : IDisposable
         get => _opacity;
         set
         {
-            if(_disposed) throw new ObjectDisposedException(nameof(Window));
+            if (_disposed) throw new ObjectDisposedException(nameof(Window));
             if (_opacity == value) return;
             Native.SDL.Window.SetOpacity(_handle, value);
             _opacity = value;
@@ -160,9 +173,9 @@ public class Window : IDisposable
         get => _hitTest;
         set
         {
-            if(_disposed) throw new ObjectDisposedException(nameof(Window));
+            if (_disposed) throw new ObjectDisposedException(nameof(Window));
             if (_hitTest == value) return;
-            if(value != null) Native.SDL.Window.SetHitTest(_handle, _uHitTest, nint.Zero);
+            if (value != null) Native.SDL.Window.SetHitTest(_handle, _uHitTest, nint.Zero);
             else Native.SDL.Window.SetHitTest(_handle, null, 0);
             _hitTest = value;
         }
@@ -184,6 +197,13 @@ public class Window : IDisposable
             case WindowEventType.Restored:
                 _displayState = DisplayState.Normal;
                 break;
+            case WindowEventType.Moved:
+                if (evt.Data1 != _location.X || evt.Data2 != _location.Y) _location = _location with { X = evt.Data1, Y = evt.Data2 };
+                break;
+            case WindowEventType.SizeChanged:
+            case WindowEventType.Resized:
+                if (evt.Data1 != _location.Width || evt.Data2 != _location.Height) _location = _location with { Width = evt.Data1, Height = evt.Data2 };
+                break;
         }
     }
     private readonly VideoSystem _video;
@@ -191,6 +211,7 @@ public class Window : IDisposable
     private readonly uint _id;
     private readonly Native.SDL.Window.HitTestHandler _uHitTest;
     private bool _disposed;
+    private Rectangle<int> _location;
     private bool _resizable;
     private bool _borderless;
     private bool _alwaysOnTop;
@@ -201,6 +222,6 @@ public class Window : IDisposable
     private HitTestHandler? _hitTest;
     private int InternalHitTest(nint window, nint area, nint data)
     {
-        return (int) _hitTest!.Invoke(this, Point<int>.FromData(area), data);
+        return (int)_hitTest!.Invoke(this, Point<int>.FromData(area), data);
     }
 }
