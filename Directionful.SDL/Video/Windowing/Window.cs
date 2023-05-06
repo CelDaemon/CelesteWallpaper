@@ -12,6 +12,7 @@ public class Window : IDisposable
     public Window(VideoSystem video, string title, Rectangle<int> location, bool resizable = true, bool borderless = false, bool alwaysOnTop = false, bool hidden = false, DisplayState displayState = default, FullscreenState fullscreenState = default)
     {
         _video = video;
+        _title = title;
         _location = location;
         _resizable = resizable;
         _borderless = borderless;
