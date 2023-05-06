@@ -7,7 +7,7 @@ using Directionful.SDL.Video.Windowing;
 GCSettings.LatencyMode = GCLatencyMode.LowLatency;
 using var sdl = new SDL();
 using var video = sdl.Video;
-using var window = new Window(video, "Test", new Rectangle<int>(320, 180, 1280, 720));
+using var window = new Window(video, "Directionful - I love you so muchhh Kay <3", new Rectangle<int>(320, 180, 1280, 720));
 using var evt = sdl.Event;
 var stopwatch = Stopwatch.StartNew();
 var flashed = false;
