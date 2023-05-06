@@ -1,7 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text;
-using Directionful.SDL.Native.Flag;
+using Directionful.SDL.Event;
+using Directionful.SDL.Native.Enum;
 using Directionful.SDL.Util;
 using Directionful.SDL.Video.Windowing;
 
@@ -135,10 +137,18 @@ internal static unsafe class SDL
     }
     public static class Event
     {
-        public static bool Poll()
+        public static bool Poll([NotNullWhen(true)] out IEvent? evt)
         {
-            var evt = stackalloc byte[56];
-            return _PollEvent((nint)evt) == 1;
+            var uEvt = stackalloc byte[56];
+            var ret = _PollEvent((nint)uEvt) == 1;
+            if(!ret) return false;
+            var type = *(EventType*)uEvt;
+            evt = type switch
+            {
+                EventType.Quit => QuitEvent.FromData(uEvt),
+                _ => UnknownEvent.FromData(uEvt)
+            };
+            return true;
             [DllImport("SDL2", EntryPoint = "SDL_PollEvent")]
             static extern int _PollEvent(nint evt);
         }

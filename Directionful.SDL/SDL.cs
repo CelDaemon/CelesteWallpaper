@@ -8,7 +8,7 @@ public class SDL : IDisposable
 {
     public SDL()
     {
-        Native.SDL.Init(Native.Flag.InitFlag.Video);
+        Native.SDL.Init(Native.Enum.InitFlag.Video);
         Video = new VideoSystem();
         Event = new EventSystem();
     }

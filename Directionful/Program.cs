@@ -6,12 +6,14 @@ using Directionful.SDL.Video.Windowing;
 // <3
 GCSettings.LatencyMode = GCLatencyMode.LowLatency;
 using var sdl = new SDL();
-using var window = new Window("Test", new Rectangle<int>(100, 100, 400, 400));
+using var window = new Window("Test", new Rectangle<int>(320, 180, 1280, 720));
 using var video = sdl.Video;
 using var evt = sdl.Event;
 var stopwatch = Stopwatch.StartNew();
 var flashed = false;
-while (true)
+var running = true;
+evt.OnQuit += _ => running = false;
+while (running)
 {
     if (stopwatch.ElapsedMilliseconds > 10000)
     {

@@ -1,4 +1,4 @@
-namespace Directionful.SDL.Native.Flag;
+namespace Directionful.SDL.Native.Enum;
 
 [Flags]
 internal enum WindowFlag : uint

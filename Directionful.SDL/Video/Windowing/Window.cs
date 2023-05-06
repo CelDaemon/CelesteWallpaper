@@ -1,5 +1,5 @@
 using System.Runtime.Versioning;
-using Directionful.SDL.Native.Flag;
+using Directionful.SDL.Native.Enum;
 using Directionful.SDL.Util;
 
 namespace Directionful.SDL.Video.Windowing;
