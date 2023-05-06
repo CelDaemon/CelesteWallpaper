@@ -55,5 +55,21 @@ internal static unsafe class SDL
             [DllImport("SDL2", EntryPoint = "SDL_DestroyWindow")]
             static extern void _DestroyWindow(nint window);
         }
+        public static void SetResizable(nint window, bool resizable)
+        {
+            _SetWindowResizable(window, resizable ? 1 : 0);
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowResizable")]
+            static extern void _SetWindowResizable(nint window, int resizable);
+        }
+    }
+    public static class Event
+    {
+        public static bool Poll()
+        {
+            var evt = stackalloc byte[56];
+            return _PollEvent((nint) evt) == 1;
+            [DllImport("SDL2", EntryPoint = "SDL_PollEvent")]
+            static extern int _PollEvent(nint evt);
+        }
     }
 }
