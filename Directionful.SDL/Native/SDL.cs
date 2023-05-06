@@ -120,9 +120,9 @@ internal static unsafe class SDL
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int HitTestHandler(nint window, nint area, nint data);
         [SupportedOSPlatform("Windows")]
-        public static void SetHitTest(nint window, HitTestHandler hitTest, nint data)
+        public static void SetHitTest(nint window, HitTestHandler? hitTest, nint data)
         {
-            if(_SetWindowHitTest(window, Marshal.GetFunctionPointerForDelegate(hitTest), data) != 0) throw new SDLException("Failed to set hit test");
+            if(_SetWindowHitTest(window, hitTest != null ? Marshal.GetFunctionPointerForDelegate(hitTest) : 0, data) != 0) throw new SDLException("Failed to set hit test");
             [DllImport("SDL2", EntryPoint = "SDL_SetWindowHitTest")]
             static extern int _SetWindowHitTest(nint window, nint hitTest, nint data);
         }

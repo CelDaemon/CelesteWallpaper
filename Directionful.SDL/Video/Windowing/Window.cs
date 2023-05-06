@@ -6,7 +6,7 @@ namespace Directionful.SDL.Video.Windowing;
 
 public class Window : IDisposable
 {
-    public delegate int HitTestHandler();
+    public delegate HitTestResult HitTestHandler(Window window, Point<int> point, nint data);
     public Window(string title, Rectangle<int> location, bool resizable = true, bool borderless = false, bool alwaysOnTop = false, bool hidden = false, DisplayState displayState = default, FullscreenState fullscreenState = default)
     {
         var flags = WindowFlag.None;
@@ -146,7 +146,8 @@ public class Window : IDisposable
         {
             if(_disposed) throw new ObjectDisposedException(nameof(Window));
             if (_hitTest == value) return;
-            Native.SDL.Window.SetHitTest(_handle, _uHitTest, nint.Zero);
+            if(value != null) Native.SDL.Window.SetHitTest(_handle, _uHitTest, nint.Zero);
+            else Native.SDL.Window.SetHitTest(_handle, null, 0);
             _hitTest = value;
         }
     }
@@ -164,6 +165,6 @@ public class Window : IDisposable
     private HitTestHandler? _hitTest;
     private int InternalHitTest(nint window, nint area, nint data)
     {
-        return 1;
+        return (int) _hitTest!.Invoke(this, Point<int>.FromData(area), data);
     }
 }
