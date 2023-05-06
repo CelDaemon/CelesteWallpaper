@@ -5,18 +5,25 @@ namespace Directionful.SDL.Video.Windowing;
 
 public class Window : IDisposable
 {
-    public Window(string title, Rectangle<int> location, bool resizable = true, bool borderless = false, bool alwaysOnTop = false, bool hidden = false)
+    public Window(string title, Rectangle<int> location, bool resizable = true, bool borderless = false, bool alwaysOnTop = false, bool hidden = false, DisplayState displayState = default)
     {
         var flags = WindowFlag.None;
         _resizable = resizable;
         _borderless = borderless;
         _alwaysOnTop = alwaysOnTop;
         _hidden = hidden;
+        _displayState = displayState;
         if (resizable) flags |= WindowFlag.Resizable;
         if (borderless) flags |= WindowFlag.Borderless;
         if (alwaysOnTop) flags |= WindowFlag.AlwaysOnTop;
         if (hidden) flags |= WindowFlag.Hidden;
         else flags |= WindowFlag.Shown;
+        flags |= displayState switch
+        {
+            DisplayState.Maximized => WindowFlag.Maximized,
+            DisplayState.Minimized => WindowFlag.Minimized,
+            _ => 0
+        };
         _handle = Native.SDL.Window.Create(title, location, flags);
     }
     public void Dispose()
@@ -71,6 +78,28 @@ public class Window : IDisposable
             _hidden = value;
         }
     }
+    public DisplayState DisplayState
+    {
+        get => _displayState;
+        set
+        {
+            if(_disposed) throw new ObjectDisposedException(nameof(Window));
+            if(_displayState == value) return;
+            switch (value)
+            {
+                case DisplayState.Maximized:
+                    Native.SDL.Window.Maximize(_handle);
+                    break;
+                case DisplayState.Minimized:
+                    Native.SDL.Window.Minimize(_handle);
+                    break;
+                case DisplayState.None:
+                    Native.SDL.Window.Restore(_handle);
+                    break;
+            }
+            _displayState = value;
+        }
+    }
 
     private readonly nint _handle;
     private bool _disposed;
@@ -78,4 +107,5 @@ public class Window : IDisposable
     private bool _borderless;
     private bool _alwaysOnTop;
     private bool _hidden;
+    private DisplayState _displayState;
 }

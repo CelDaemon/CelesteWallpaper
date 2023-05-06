@@ -85,6 +85,24 @@ internal static unsafe class SDL
             [DllImport("SDL2", EntryPoint = "SDL_HideWindow")]
             static extern void _HideWindow(nint window);
         }
+        public static void Maximize(nint window)
+        {
+            _MaximizeWindow(window);
+            [DllImport("SDL2", EntryPoint = "SDL_MaximizeWindow")]
+            static extern void _MaximizeWindow(nint window);
+        }
+        public static void Minimize(nint window)
+        {
+            _MinimizeWindow(window);
+            [DllImport("SDL2", EntryPoint = "SDL_MinimizeWindow")]
+            static extern void _MinimizeWindow(nint window);
+        }
+        public static void Restore(nint window)
+        {
+            _RestoreWindow(window);
+            [DllImport("SDL2", EntryPoint = "SDL_RestoreWindow")]
+            static extern void _RestoreWindow(nint window);
+        }
     }
     public static class Event
     {
