@@ -123,6 +123,17 @@ public class Window : IDisposable
             _fullscreenState = value;
         }
     }
+    public float Opacity
+    {
+        get => _opacity;
+        set
+        {
+            if(_disposed) throw new ObjectDisposedException(nameof(Window));
+            if (_opacity == value) return;
+            Native.SDL.Window.SetOpacity(_handle, value);
+            _opacity = value;
+        }
+    }
 
     private readonly nint _handle;
     private bool _disposed;
@@ -132,4 +143,5 @@ public class Window : IDisposable
     private bool _hidden;
     private DisplayState _displayState;
     private FullscreenState _fullscreenState;
+    private float _opacity = 1;
 }

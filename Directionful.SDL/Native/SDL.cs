@@ -110,6 +110,12 @@ internal static unsafe class SDL
             [DllImport("SDL2", EntryPoint = "SDL_SetWindowFullscreen")]
             static extern int _SetWindowFullscreen(nint window, uint flags);
         }
+        public static void SetOpacity(nint window, float opacity)
+        {
+            if(_SetWindowOpacity(window, opacity) != 0) throw new SDLException("Failed to set opacity");
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowOpacity")]
+            static extern int _SetWindowOpacity(nint window, float opacity);
+        }
     }
     public static class Event
     {
