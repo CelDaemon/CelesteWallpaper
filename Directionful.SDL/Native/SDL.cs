@@ -155,6 +155,19 @@ internal static unsafe class SDL
             [DllImport("SDL2", EntryPoint = "SDL_SetWindowSize")]
             static extern void _SetWindowSize(nint window, int w, int h);
         }
+        public static void SetTitle(nint window, string title)
+        {
+            var uTitleLength = Encoding.UTF8.GetMaxByteCount(title.Length) + 1;
+            var uTitle = stackalloc byte[uTitleLength];
+            fixed (char* titlePtr = title)
+            {
+                Encoding.UTF8.GetBytes(titlePtr, title.Length, uTitle, uTitleLength - 1);
+            }
+            *(uTitle + uTitleLength - 1) = 0;
+            _SetWindowTitle(window, (nint) uTitle);
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowTitle")]
+            static extern void _SetWindowTitle(nint window, nint title);
+        }
     }
     public static class Event
     {

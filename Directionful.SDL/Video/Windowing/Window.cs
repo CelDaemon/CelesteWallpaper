@@ -60,6 +60,17 @@ public class Window : IDisposable
         if (_disposed) throw new ObjectDisposedException(nameof(Window));
         Native.SDL.Window.Flash(_handle, FlashOperation.Cancel);
     }
+    public string Title
+    {
+        get => _title;
+        set
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(Window));
+            if(_title == value) return;
+            Native.SDL.Window.SetTitle(_handle, value);
+            _title = value;
+        }
+    }
     public Rectangle<int> Location
     {
         get => _location;
@@ -211,6 +222,7 @@ public class Window : IDisposable
     private readonly uint _id;
     private readonly Native.SDL.Window.HitTestHandler _uHitTest;
     private bool _disposed;
+    private string _title;
     private Rectangle<int> _location;
     private bool _resizable;
     private bool _borderless;
