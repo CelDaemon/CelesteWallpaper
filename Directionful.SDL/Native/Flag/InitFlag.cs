@@ -2,6 +2,7 @@ namespace Directionful.SDL.Native.Flag;
 
 internal enum InitFlag : uint
 {
+    None = 0x00000000,
     Timer = 0x00000001,
     Audio = 0x00000010,
     Video = 0x00000020,
