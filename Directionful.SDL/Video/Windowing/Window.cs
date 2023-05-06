@@ -5,15 +5,18 @@ namespace Directionful.SDL.Video.Windowing;
 
 public class Window : IDisposable
 {
-    public Window(string title, Rectangle<int> location, bool resizable = true, bool borderless = false, bool alwaysOnTop = false)
+    public Window(string title, Rectangle<int> location, bool resizable = true, bool borderless = false, bool alwaysOnTop = false, bool hidden = false)
     {
         var flags = WindowFlag.None;
         _resizable = resizable;
         _borderless = borderless;
         _alwaysOnTop = alwaysOnTop;
+        _hidden = hidden;
         if (resizable) flags |= WindowFlag.Resizable;
         if (borderless) flags |= WindowFlag.Borderless;
         if (alwaysOnTop) flags |= WindowFlag.AlwaysOnTop;
+        if (hidden) flags |= WindowFlag.Hidden;
+        else flags |= WindowFlag.Shown;
         _handle = Native.SDL.Window.Create(title, location, flags);
     }
     public void Dispose()
@@ -56,10 +59,23 @@ public class Window : IDisposable
             _alwaysOnTop = value;
         }
     }
+    public bool Hidden
+    {
+        get => _hidden;
+        set
+        {
+            if(_disposed) throw new ObjectDisposedException(nameof(Window));
+            if(_hidden == value) return;
+            if (value) Native.SDL.Window.Hide(_handle);
+            else Native.SDL.Window.Show(_handle);
+            _hidden = value;
+        }
+    }
 
     private readonly nint _handle;
     private bool _disposed;
     private bool _resizable;
     private bool _borderless;
     private bool _alwaysOnTop;
+    private bool _hidden;
 }

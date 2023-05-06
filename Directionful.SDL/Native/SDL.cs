@@ -73,6 +73,18 @@ internal static unsafe class SDL
             [DllImport("SDL2", EntryPoint = "SDL_SetWindowAlwaysOnTop")]
             static extern void _SetWindowAlwaysOnTop(nint window, int alwaysOnTop);
         }
+        public static void Show(nint window)
+        {
+            _ShowWindow(window);
+            [DllImport("SDL2", EntryPoint = "SDL_ShowWindow")]
+            static extern void _ShowWindow(nint window);
+        }
+        public static void Hide(nint window)
+        {
+            _HideWindow(window);
+            [DllImport("SDL2", EntryPoint = "SDL_HideWindow")]
+            static extern void _HideWindow(nint window);
+        }
     }
     public static class Event
     {
