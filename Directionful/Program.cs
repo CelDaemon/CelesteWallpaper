@@ -5,7 +5,7 @@ using Directionful.SDL.Video.Windowing;
 // <3
 GCSettings.LatencyMode = GCLatencyMode.LowLatency;
 using var sdl = new SDL();
-using var window = new Window("Test", new Directionful.SDL.Util.Rectangle<int>(100, 100, 400, 400), false);
+using var window = new Window("Test", new Directionful.SDL.Util.Rectangle<int>(100, 100, 400, 400), alwaysOnTop: true);
 using var video = sdl.Video;
 using var evt = sdl.Event;
 var stopwatch = Stopwatch.StartNew();
