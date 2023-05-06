@@ -1,4 +1,6 @@
 using System.Runtime.Versioning;
+using Directionful.SDL.Event;
+using Directionful.SDL.Event.Windowing;
 using Directionful.SDL.Native.Enum;
 using Directionful.SDL.Util;
 
@@ -7,14 +9,15 @@ namespace Directionful.SDL.Video.Windowing;
 public class Window : IDisposable
 {
     public delegate HitTestResult HitTestHandler(Window window, Point<int> point, nint data);
-    public Window(string title, Rectangle<int> location, bool resizable = true, bool borderless = false, bool alwaysOnTop = false, bool hidden = false, DisplayState displayState = default, FullscreenState fullscreenState = default)
+    public Window(VideoSystem video, string title, Rectangle<int> location, bool resizable = true, bool borderless = false, bool alwaysOnTop = false, bool hidden = false, DisplayState displayState = default, FullscreenState fullscreenState = default)
     {
-        var flags = WindowFlag.None;
+        _video = video;
         _resizable = resizable;
         _borderless = borderless;
         _alwaysOnTop = alwaysOnTop;
         _hidden = hidden;
         _displayState = displayState;
+        var flags = WindowFlag.None;
         if (resizable) flags |= WindowFlag.Resizable;
         if (borderless) flags |= WindowFlag.Borderless;
         if (alwaysOnTop) flags |= WindowFlag.AlwaysOnTop;
@@ -33,14 +36,17 @@ public class Window : IDisposable
             _ => 0
         };
         _handle = Native.SDL.Window.Create(title, location, flags);
-
+        _id = Native.SDL.Window.GetID(_handle);
         _uHitTest = InternalHitTest;
+
+        video.RegisterWindow(this);
     }
     public void Dispose()
     {
         if (_disposed) return;
         _disposed = true;
         GC.SuppressFinalize(this);
+        _video.UnregisterWindow(this);
         Native.SDL.Window.Destroy(_handle);
     }
     public void Flash(bool untilFocussed)
@@ -113,7 +119,7 @@ public class Window : IDisposable
                 case DisplayState.Minimized:
                     Native.SDL.Window.Minimize(_handle);
                     break;
-                case DisplayState.None:
+                case DisplayState.Normal:
                     Native.SDL.Window.Restore(_handle);
                     break;
             }
@@ -161,8 +167,28 @@ public class Window : IDisposable
             _hitTest = value;
         }
     }
-
+    public uint ID
+    {
+        get => _id;
+    }
+    internal void HandleEvent(WindowEvent evt)
+    {
+        switch (evt.Type)
+        {
+            case WindowEventType.Minimized:
+                _displayState = DisplayState.Minimized;
+                break;
+            case WindowEventType.Maximized:
+                _displayState = DisplayState.Maximized;
+                break;
+            case WindowEventType.Restored:
+                _displayState = DisplayState.Normal;
+                break;
+        }
+    }
+    private readonly VideoSystem _video;
     private readonly nint _handle;
+    private readonly uint _id;
     private readonly Native.SDL.Window.HitTestHandler _uHitTest;
     private bool _disposed;
     private bool _resizable;

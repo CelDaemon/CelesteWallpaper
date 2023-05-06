@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text;
 using Directionful.SDL.Event;
+using Directionful.SDL.Event.Windowing;
 using Directionful.SDL.Native.Enum;
 using Directionful.SDL.Util;
 using Directionful.SDL.Video.Windowing;
@@ -134,6 +135,14 @@ internal static unsafe class SDL
             [DllImport("SDL2", EntryPoint = "SDL_FlashWindow")]
             static extern int _Flash(nint window, int operation);
         }
+        public static uint GetID(nint window)
+        {
+            var ret = _GetWindowID(window);
+            if(ret == nint.Zero) throw new SDLException("Failed to get window id");
+            return ret;
+            [DllImport("SDL2", EntryPoint = "SDL_GetWindowID")]
+            static extern uint _GetWindowID(nint window);
+        }
     }
     public static class Event
     {
@@ -146,6 +155,7 @@ internal static unsafe class SDL
             evt = type switch
             {
                 EventType.Quit => QuitEvent.FromData(uEvt),
+                EventType.Window => WindowEvent.FromData(uEvt),
                 _ => UnknownEvent.FromData(uEvt)
             };
             return true;

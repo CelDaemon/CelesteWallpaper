@@ -1,3 +1,6 @@
+using Directionful.SDL.Event.Windowing;
+using Directionful.SDL.Video;
+
 namespace Directionful.SDL.Event;
 
 public class EventSystem : IDisposable
@@ -18,10 +21,14 @@ public class EventSystem : IDisposable
                 case QuitEvent quitEvt:
                     OnQuit?.Invoke(quitEvt);
                     break;
+                case WindowEvent windowEvt:
+                    _video.GetWindow(windowEvt.WindowID).HandleEvent(windowEvt);
+                    break;
             }
         }
     }
     public QuitHandler? OnQuit {get;set;}
-    internal EventSystem() { }
+    internal EventSystem(VideoSystem video) { _video = video; }
+    private readonly VideoSystem _video;
     private bool _disposed;
 }

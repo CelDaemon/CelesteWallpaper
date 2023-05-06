@@ -2,7 +2,7 @@ namespace Directionful.SDL.Video.Windowing;
 
 public enum DisplayState : byte
 {
-    None,
+    Normal,
     Maximized,
     Minimized
 }
