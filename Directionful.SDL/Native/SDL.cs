@@ -61,6 +61,12 @@ internal static unsafe class SDL
             [DllImport("SDL2", EntryPoint = "SDL_SetWindowResizable")]
             static extern void _SetWindowResizable(nint window, int resizable);
         }
+        public static void SetBordered(nint window, bool bordered)
+        {
+            _SetWindowBordered(window, bordered ? 1 : 0);
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowBordered")]
+            static extern void _SetWindowBordered(nint window, int bordered);
+        }
     }
     public static class Event
     {
