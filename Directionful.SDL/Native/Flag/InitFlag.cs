@@ -1,5 +1,6 @@
 namespace Directionful.SDL.Native.Flag;
 
+[Flags]
 internal enum InitFlag : uint
 {
     None = 0x00000000,

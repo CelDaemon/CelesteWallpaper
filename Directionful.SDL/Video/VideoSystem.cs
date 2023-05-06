@@ -4,10 +4,10 @@ public class VideoSystem : IDisposable
 {
     public void Dispose()
     {
-        if(_disposed) return;
+        if (_disposed) return;
         _disposed = true;
         GC.SuppressFinalize(this);
     }
-    internal VideoSystem() {}
+    internal VideoSystem() { }
     private bool _disposed;
 }

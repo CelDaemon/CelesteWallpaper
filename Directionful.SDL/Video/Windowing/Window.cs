@@ -5,7 +5,7 @@ namespace Directionful.SDL.Video.Windowing;
 
 public class Window : IDisposable
 {
-    public Window(string title, Rectangle<int> location, bool resizable = true, bool borderless = false, bool alwaysOnTop = false, bool hidden = false, DisplayState displayState = default)
+    public Window(string title, Rectangle<int> location, bool resizable = true, bool borderless = false, bool alwaysOnTop = false, bool hidden = false, DisplayState displayState = default, FullscreenState fullscreenState = default)
     {
         var flags = WindowFlag.None;
         _resizable = resizable;
@@ -22,6 +22,12 @@ public class Window : IDisposable
         {
             DisplayState.Maximized => WindowFlag.Maximized,
             DisplayState.Minimized => WindowFlag.Minimized,
+            _ => 0
+        };
+        flags |= fullscreenState switch
+        {
+            FullscreenState.Fullscreen => WindowFlag.Fullscreen,
+            FullscreenState.BorderlessFullscreen => WindowFlag.FullscreenDesktop,
             _ => 0
         };
         _handle = Native.SDL.Window.Create(title, location, flags);
@@ -49,8 +55,8 @@ public class Window : IDisposable
         get => _borderless;
         set
         {
-            if(_disposed) throw new ObjectDisposedException(nameof(Window));
-            if(_borderless == value) return;
+            if (_disposed) throw new ObjectDisposedException(nameof(Window));
+            if (_borderless == value) return;
             Native.SDL.Window.SetBordered(_handle, !value);
             _borderless = value;
         }
@@ -60,8 +66,8 @@ public class Window : IDisposable
         get => _alwaysOnTop;
         set
         {
-            if(_disposed) throw new ObjectDisposedException(nameof(Window));
-            if(_alwaysOnTop == value) return;
+            if (_disposed) throw new ObjectDisposedException(nameof(Window));
+            if (_alwaysOnTop == value) return;
             Native.SDL.Window.SetAlwaysOnTop(_handle, value);
             _alwaysOnTop = value;
         }
@@ -71,8 +77,8 @@ public class Window : IDisposable
         get => _hidden;
         set
         {
-            if(_disposed) throw new ObjectDisposedException(nameof(Window));
-            if(_hidden == value) return;
+            if (_disposed) throw new ObjectDisposedException(nameof(Window));
+            if (_hidden == value) return;
             if (value) Native.SDL.Window.Hide(_handle);
             else Native.SDL.Window.Show(_handle);
             _hidden = value;
@@ -83,8 +89,8 @@ public class Window : IDisposable
         get => _displayState;
         set
         {
-            if(_disposed) throw new ObjectDisposedException(nameof(Window));
-            if(_displayState == value) return;
+            if (_disposed) throw new ObjectDisposedException(nameof(Window));
+            if (_displayState == value) return;
             switch (value)
             {
                 case DisplayState.Maximized:
@@ -100,6 +106,23 @@ public class Window : IDisposable
             _displayState = value;
         }
     }
+    public FullscreenState FullscreenState
+    {
+        get => _fullscreenState;
+        set
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(Window));
+            if (_fullscreenState == value) return;
+            var flags = value switch
+            {
+                FullscreenState.Fullscreen => WindowFlag.Fullscreen,
+                FullscreenState.BorderlessFullscreen => WindowFlag.Borderless,
+                _ => WindowFlag.None
+            };
+            Native.SDL.Window.SetFullscreen(_handle, flags);
+            _fullscreenState = value;
+        }
+    }
 
     private readonly nint _handle;
     private bool _disposed;
@@ -108,4 +131,5 @@ public class Window : IDisposable
     private bool _alwaysOnTop;
     private bool _hidden;
     private DisplayState _displayState;
+    private FullscreenState _fullscreenState;
 }

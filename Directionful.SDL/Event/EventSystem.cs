@@ -4,15 +4,15 @@ public class EventSystem : IDisposable
 {
     public void Dispose()
     {
-        if(_disposed) return;
+        if (_disposed) return;
         _disposed = true;
         GC.SuppressFinalize(this);
     }
     public void ProcessEvents()
     {
-        if(_disposed) throw new ObjectDisposedException(nameof(Event));
-        while(Native.SDL.Event.Poll()) {}
+        if (_disposed) throw new ObjectDisposedException(nameof(Event));
+        while (Native.SDL.Event.Poll()) { }
     }
-    internal EventSystem() {}
+    internal EventSystem() { }
     private bool _disposed;
 }

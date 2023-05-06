@@ -2,7 +2,7 @@ namespace Directionful.SDL;
 
 public class SDLException : Exception
 {
-    public SDLException(string message) : base(Build(message)) {}
+    public SDLException(string message) : base(Build(message)) { }
 
     private static string Build(string message)
     {

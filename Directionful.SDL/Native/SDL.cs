@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Directionful.SDL.Native.Flag;
 using Directionful.SDL.Util;
+using Directionful.SDL.Video.Windowing;
 
 namespace Directionful.SDL.Native;
 
@@ -9,7 +10,7 @@ internal static unsafe class SDL
 {
     public static void Init(InitFlag flags)
     {
-        if(_Init((uint) flags) != 0) throw new SDLException("Failed to initialize SDL");
+        if (_Init((uint)flags) != 0) throw new SDLException("Failed to initialize SDL");
         [DllImport("SDL2", EntryPoint = "SDL_Init")]
         static extern int _Init(uint flags);
     }
@@ -24,9 +25,9 @@ internal static unsafe class SDL
         public static string? Get()
         {
             var retPtr = _GetError();
-            if(retPtr == nint.Zero) return null;
+            if (retPtr == nint.Zero) return null;
             var ret = new string((sbyte*)retPtr);
-            if(string.IsNullOrEmpty(ret)) return null;
+            if (string.IsNullOrEmpty(ret)) return null;
             return ret;
             [DllImport("SDL2", EntryPoint = "SDL_GetError")]
             static extern nint _GetError();
@@ -38,13 +39,13 @@ internal static unsafe class SDL
         {
             var uTitleLength = Encoding.UTF8.GetMaxByteCount(title.Length) + 1;
             var uTitle = stackalloc byte[uTitleLength];
-            fixed(char* titlePtr = title)
+            fixed (char* titlePtr = title)
             {
                 Encoding.UTF8.GetBytes(titlePtr, title.Length, uTitle, uTitleLength - 1);
             }
             *(uTitle + uTitleLength - 1) = 0;
-            var ret = _CreateWindow((nint) uTitle, location.X, location.Y, location.Width, location.Height, (uint) flags);
-            if(ret == nint.Zero) throw new SDLException("Failed to create window");
+            var ret = _CreateWindow((nint)uTitle, location.X, location.Y, location.Width, location.Height, (uint)flags);
+            if (ret == nint.Zero) throw new SDLException("Failed to create window");
             return ret;
             [DllImport("SDL2", EntryPoint = "SDL_CreateWindow")]
             static extern nint _CreateWindow(nint title, int x, int y, int w, int h, uint flags);
@@ -103,13 +104,19 @@ internal static unsafe class SDL
             [DllImport("SDL2", EntryPoint = "SDL_RestoreWindow")]
             static extern void _RestoreWindow(nint window);
         }
+        public static void SetFullscreen(nint window, WindowFlag flags)
+        {
+            if (_SetWindowFullscreen(window, (uint)flags) != 0) throw new SDLException("Failed to set fullscreen");
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowFullscreen")]
+            static extern int _SetWindowFullscreen(nint window, uint flags);
+        }
     }
     public static class Event
     {
         public static bool Poll()
         {
             var evt = stackalloc byte[56];
-            return _PollEvent((nint) evt) == 1;
+            return _PollEvent((nint)evt) == 1;
             [DllImport("SDL2", EntryPoint = "SDL_PollEvent")]
             static extern int _PollEvent(nint evt);
         }
