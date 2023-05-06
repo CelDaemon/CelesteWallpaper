@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Text;
 using Directionful.SDL.Native.Flag;
 using Directionful.SDL.Util;
@@ -115,6 +116,15 @@ internal static unsafe class SDL
             if(_SetWindowOpacity(window, opacity) != 0) throw new SDLException("Failed to set opacity");
             [DllImport("SDL2", EntryPoint = "SDL_SetWindowOpacity")]
             static extern int _SetWindowOpacity(nint window, float opacity);
+        }
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int HitTestHandler(nint window, nint area, nint data);
+        [SupportedOSPlatform("Windows")]
+        public static void SetHitTest(nint window, HitTestHandler hitTest, nint data)
+        {
+            if(_SetWindowHitTest(window, Marshal.GetFunctionPointerForDelegate(hitTest), data) != 0) throw new SDLException("Failed to set hit test");
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowHitTest")]
+            static extern int _SetWindowHitTest(nint window, nint hitTest, nint data);
         }
     }
     public static class Event

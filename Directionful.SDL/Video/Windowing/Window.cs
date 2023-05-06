@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using Directionful.SDL.Native.Flag;
 using Directionful.SDL.Util;
 
@@ -5,6 +6,7 @@ namespace Directionful.SDL.Video.Windowing;
 
 public class Window : IDisposable
 {
+    public delegate int HitTestHandler();
     public Window(string title, Rectangle<int> location, bool resizable = true, bool borderless = false, bool alwaysOnTop = false, bool hidden = false, DisplayState displayState = default, FullscreenState fullscreenState = default)
     {
         var flags = WindowFlag.None;
@@ -31,6 +33,8 @@ public class Window : IDisposable
             _ => 0
         };
         _handle = Native.SDL.Window.Create(title, location, flags);
+
+        _uHitTest = InternalHitTest;
     }
     public void Dispose()
     {
@@ -134,8 +138,21 @@ public class Window : IDisposable
             _opacity = value;
         }
     }
+    [SupportedOSPlatform("Windows")]
+    public HitTestHandler? HitTest
+    {
+        get => _hitTest;
+        set
+        {
+            if(_disposed) throw new ObjectDisposedException(nameof(Window));
+            if (_hitTest == value) return;
+            Native.SDL.Window.SetHitTest(_handle, _uHitTest, nint.Zero);
+            _hitTest = value;
+        }
+    }
 
     private readonly nint _handle;
+    private readonly Native.SDL.Window.HitTestHandler _uHitTest;
     private bool _disposed;
     private bool _resizable;
     private bool _borderless;
@@ -144,4 +161,9 @@ public class Window : IDisposable
     private DisplayState _displayState;
     private FullscreenState _fullscreenState;
     private float _opacity = 1;
+    private HitTestHandler? _hitTest;
+    private int InternalHitTest(nint window, nint area, nint data)
+    {
+        return 1;
+    }
 }
