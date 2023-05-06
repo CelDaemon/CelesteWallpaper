@@ -126,6 +126,12 @@ internal static unsafe class SDL
             [DllImport("SDL2", EntryPoint = "SDL_SetWindowHitTest")]
             static extern int _SetWindowHitTest(nint window, nint hitTest, nint data);
         }
+        public static void Flash(nint window, FlashOperation operation)
+        {
+            if(_Flash(window, (int) operation) != 0) throw new SDLException("Failed to flash window");
+            [DllImport("SDL2", EntryPoint = "SDL_FlashWindow")]
+            static extern int _Flash(nint window, int operation);
+        }
     }
     public static class Event
     {

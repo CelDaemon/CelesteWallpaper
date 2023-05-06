@@ -43,6 +43,16 @@ public class Window : IDisposable
         GC.SuppressFinalize(this);
         Native.SDL.Window.Destroy(_handle);
     }
+    public void Flash(bool untilFocussed)
+    {
+        if(_disposed) throw new ObjectDisposedException(nameof(Window));
+        Native.SDL.Window.Flash(_handle, untilFocussed ? FlashOperation.UntilFocussed : FlashOperation.Briefly);
+    }
+    public void CancelFlash()
+    {
+        if(_disposed) throw new ObjectDisposedException(nameof(Window));
+        Native.SDL.Window.Flash(_handle,  FlashOperation.Cancel);
+    }
     public bool Resizable
     {
         get => _resizable;
