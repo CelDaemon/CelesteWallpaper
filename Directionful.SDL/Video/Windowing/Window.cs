@@ -42,12 +42,15 @@ public class Window : IDisposable
         _uHitTest = InternalHitTest;
 
         video.RegisterWindow(this);
+
+        Renderer = new Renderer(_handle, -1, true);
     }
     public void Dispose()
     {
         if (_disposed) return;
         _disposed = true;
         GC.SuppressFinalize(this);
+        Renderer.Dispose();
         _video.UnregisterWindow(this);
         Native.SDL.Window.Destroy(_handle);
     }
@@ -196,6 +199,7 @@ public class Window : IDisposable
     {
         get => _id;
     }
+    public Renderer Renderer {get; init;}
     internal void HandleEvent(WindowEvent evt)
     {
         switch (evt.Type)

@@ -169,6 +169,23 @@ internal static unsafe class SDL
             static extern void _SetWindowTitle(nint window, nint title);
         }
     }
+    public static class Renderer
+    {
+        public static nint Create(nint window, int index, RendererFlag flags)
+        {
+            var ret = _CreateRenderer(window, index, (uint) flags);
+            if(ret == nint.Zero) throw new SDLException("Failed to create renderer");
+            return ret;
+            [DllImport("SDL2", EntryPoint = "SDL_CreateRenderer")]
+            static extern nint _CreateRenderer(nint window, int index, uint flags);
+        }
+        public static void Destroy(nint renderer)
+        {
+            _DestroyRenderer(renderer);
+            [DllImport("SDL2", EntryPoint = "SDL_DestroyRenderer")]
+            static extern void _DestroyRenderer(nint renderer);
+        }
+    }
     public static class Event
     {
         public static bool Poll([NotNullWhen(true)] out IEvent? evt)
