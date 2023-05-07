@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Runtime;
 using Directionful.SDL;
 using Directionful.SDL.Util;
