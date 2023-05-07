@@ -185,6 +185,40 @@ internal static unsafe class SDL
             [DllImport("SDL2", EntryPoint = "SDL_DestroyRenderer")]
             static extern void _DestroyRenderer(nint renderer);
         }
+        public static void Present(nint renderer)
+        {
+            _RenderPresent(renderer);
+            [DllImport("SDL2", EntryPoint = "SDL_RenderPresent")]
+            static extern void _RenderPresent(nint renderer);
+        }
+        public static void SetDrawColor(nint renderer, Color color)
+        {
+            if(_SetRenderDrawColor(renderer, color.R, color.G, color.B, color.A) != 0) throw new SDLException("Failed to set draw color");
+            [DllImport("SDL2", EntryPoint = "SDL_SetRenderDrawColor")]
+            static extern int _SetRenderDrawColor(nint renderer, byte r, byte g, byte b, byte a);
+        }
+        public static void Clear(nint renderer)
+        {
+            if(_RenderClear(renderer) != 0) throw new SDLException("Failed to clear renderer");
+            [DllImport("SDL2", EntryPoint = "SDL_RenderClear")]
+            static extern int _RenderClear(nint renderer);
+        }
+        public static void FillRectangle(nint renderer, Rectangle<float> rect)
+        {
+            var uRect = stackalloc float[4];
+            rect.ToData(uRect);
+            if(_RenderFillRectF(renderer, (nint) uRect) != 0) throw new SDLException("Failed to fill rectangle");
+            [DllImport("SDL2", EntryPoint = "SDL_RenderFillRectF")]
+            static extern int _RenderFillRectF(nint renderer, nint rect);
+        }
+        public static void DrawRectangle(nint renderer, Rectangle<float> rect)
+        {
+            var uRect = stackalloc float[4];
+            rect.ToData(uRect);
+            if(_RenderDrawRectF(renderer, (nint) uRect) != 0) throw new SDLException("Failed to fill rectangle");
+            [DllImport("SDL2", EntryPoint = "SDL_RenderDrawRectF")]
+            static extern int _RenderDrawRectF(nint renderer, nint rect);
+        }
     }
     public static class Event
     {
