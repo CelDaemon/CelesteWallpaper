@@ -6,6 +6,7 @@ using Directionful.SDL.Event;
 using Directionful.SDL.Event.Windowing;
 using Directionful.SDL.Native.Enum;
 using Directionful.SDL.Util;
+using Directionful.SDL.Video;
 using Directionful.SDL.Video.Windowing;
 
 namespace Directionful.SDL.Native;
@@ -218,6 +219,12 @@ internal static unsafe class SDL
             if(_RenderDrawRectF(renderer, (nint) uRect) != 0) throw new SDLException("Failed to fill rectangle");
             [DllImport("SDL2", EntryPoint = "SDL_RenderDrawRectF")]
             static extern int _RenderDrawRectF(nint renderer, nint rect);
+        }
+        public static void SetDrawBlendMode(nint renderer, BlendMode mode)
+        {
+            if(_SetRenderDrawBlendMode(renderer, (int) mode) != 0) throw new SDLException("Failed to set draw blend mode");
+            [DllImport("SDL2", EntryPoint = "SDL_SetRenderDrawBlendMode")]
+            static extern int _SetRenderDrawBlendMode(nint renderer, int mode);
         }
     }
     public static class Event
