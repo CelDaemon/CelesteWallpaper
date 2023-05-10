@@ -1,7 +1,7 @@
-namespace Directionful.SDL.Video;
+namespace Directionful.SDL.Native.Enum;
 
 [Flags]
-public enum WindowFlag : uint
+internal enum WindowFlag : uint
 {
     None = 0x00000000,
     Fullscreen = 0x00000001,

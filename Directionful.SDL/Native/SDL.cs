@@ -1,19 +1,21 @@
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text;
 using Directionful.SDL.Event;
+using Directionful.SDL.Event.Windowing;
+using Directionful.SDL.Native.Enum;
 using Directionful.SDL.Util;
 using Directionful.SDL.Video;
+using Directionful.SDL.Video.Windowing;
 
 namespace Directionful.SDL.Native;
 
-public static unsafe class SDL
+internal static unsafe class SDL
 {
     public static void Init(InitFlag flags)
     {
-        if(_Init((uint) flags) != 0) throw new SDLException("Failed to initialize SDL");
+        if (_Init((uint)flags) != 0) throw new SDLException("Failed to initialize SDL");
         [DllImport("SDL2", EntryPoint = "SDL_Init")]
         static extern int _Init(uint flags);
     }
@@ -23,78 +25,35 @@ public static unsafe class SDL
         [DllImport("SDL2", EntryPoint = "SDL_Quit")]
         static extern void _Quit();
     }
-    public static class Event
+    public static class Error
     {
-        public static bool Poll([NotNullWhen(true)] ref IEvent? evt)
+        public static string? Get()
         {
-            var uEvt = stackalloc byte[56];
-            if(_PollEvent((nint)uEvt) != 1)
-            {
-                evt = null;
-                return false;
-            }
-            var type = *(EventType*)uEvt;
-            evt = type switch
-            {
-                EventType.Quit => QuitEvent.FromData((nint)uEvt),
-                EventType.Window => WindowEvent.FromData((nint)uEvt),
-                EventType.ClipboardUpdate => ClipboardUpdateEvent.FromData((nint)uEvt),
-                _ => UnknownEvent.FromData((nint)uEvt)
-            };
-            return true;
-            [DllImport("SDL2", EntryPoint = "SDL_PollEvent")]
-            static extern int _PollEvent(nint evt);
+            var retPtr = _GetError();
+            if (retPtr == nint.Zero) return null;
+            var ret = new string((sbyte*)retPtr);
+            if (string.IsNullOrEmpty(ret)) return null;
+            return ret;
+            [DllImport("SDL2", EntryPoint = "SDL_GetError")]
+            static extern nint _GetError();
         }
     }
     public static class Window
     {
-        public static nint Create(string title, int x, int y, int w, int h, WindowFlag flags)
+        public static nint Create(string title, Rectangle<int> location, WindowFlag flags)
         {
-            var uTitleSize = Encoding.UTF8.GetMaxByteCount(title.Length) + 1;
-            byte* uTitle = stackalloc byte[uTitleSize];
-            fixed (char* titleFixed = title)
+            var uTitleLength = Encoding.UTF8.GetMaxByteCount(title.Length) + 1;
+            var uTitle = stackalloc byte[uTitleLength];
+            fixed (char* titlePtr = title)
             {
-                Encoding.UTF8.GetBytes(titleFixed, title.Length, uTitle, uTitleSize - 1);
+                Encoding.UTF8.GetBytes(titlePtr, title.Length, uTitle, uTitleLength - 1);
             }
-            *(uTitle + uTitleSize - 1) = 0;
-            var ret = _CreateWindow((nint) uTitle, x, y, w, h, (uint) flags);
-            if(ret == nint.Zero) throw new SDLException("Failed to create window");
+            *(uTitle + uTitleLength - 1) = 0;
+            var ret = _CreateWindow((nint)uTitle, location.X, location.Y, location.Width, location.Height, (uint)flags);
+            if (ret == nint.Zero) throw new SDLException("Failed to create window");
             return ret;
             [DllImport("SDL2", EntryPoint = "SDL_CreateWindow")]
             static extern nint _CreateWindow(nint title, int x, int y, int w, int h, uint flags);
-        }
-        public static void SetTitle(nint window, string title)
-        {
-            var uTitleSize = Encoding.UTF8.GetMaxByteCount(title.Length) + 1;
-            byte* uTitle = stackalloc byte[uTitleSize];
-            fixed (char* titleFixed = title)
-            {
-                Encoding.UTF8.GetBytes(titleFixed, title.Length, uTitle, uTitleSize - 1);
-            }
-            *(uTitle + uTitleSize - 1) = 0;
-            _SetWindowTitle(window, (nint) uTitle);
-            [DllImport("SDL2", EntryPoint = "SDL_SetWindowTitle")]
-            static extern void _SetWindowTitle(nint window, nint title);
-        }
-        public static void SetPosition(nint window, int x, int y)
-        {
-            _SetWindowPosition(window, x, y);
-            [DllImport("SDL2", EntryPoint = "SDL_SetWindowPosition")]
-            static extern void _SetWindowPosition(nint window, int x, int y);
-        }
-        public static void SetSize(nint window, int width, int height)
-        {
-            _SetWindowSize(window, width, height);
-            [DllImport("SDL2", EntryPoint = "SDL_SetWindowSize")]
-            static extern void _SetWindowSize(nint window, int width, int height);
-        }
-        public static uint GetID(nint window)
-        {
-            var ret = _GetWindowID(window);
-            if(ret == 0) throw new SDLException("Failed to get window ID");
-            return ret;
-            [DllImport("SDL2", EntryPoint = "SDL_GetWindowID")]
-            static extern uint _GetWindowID(nint window);
         }
         public static void Destroy(nint window)
         {
@@ -102,26 +61,23 @@ public static unsafe class SDL
             [DllImport("SDL2", EntryPoint = "SDL_DestroyWindow")]
             static extern void _DestroyWindow(nint window);
         }
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate int HitTestHandler(nint window, nint area, nint data);
-        [SupportedOSPlatform("windows")]
-        public static void SetHitTest(nint window, HitTestHandler? callback, nint data)
+        public static void SetResizable(nint window, bool resizable)
         {
-            if(_SetWindowHitTest(window, callback != null ? Marshal.GetFunctionPointerForDelegate(callback) : nint.Zero, data) != 0) throw new SDLException("Failed to set hit test");
-            [DllImport("SDL2", EntryPoint = "SDL_SetWindowHitTest")]
-            static extern int _SetWindowHitTest(nint window, nint callback, nint data);
+            _SetWindowResizable(window, resizable ? 1 : 0);
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowResizable")]
+            static extern void _SetWindowResizable(nint window, int resizable);
         }
-        public static void SetMinimumSize(nint window, Size<int> size)
+        public static void SetBordered(nint window, bool bordered)
         {
-            _SetWindowMimimumSize(window, size.Width, size.Height);
-            [DllImport("SDL2", EntryPoint = "SDL_SetWindowMinimumSize")]
-            static extern void _SetWindowMimimumSize(nint window, int w, int h);
+            _SetWindowBordered(window, bordered ? 1 : 0);
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowBordered")]
+            static extern void _SetWindowBordered(nint window, int bordered);
         }
-        public static void SetMaximumSize(nint window, Size<int> size)
+        public static void SetAlwaysOnTop(nint window, bool alwaysOnTop)
         {
-            _SetWindowMaximumSize(window, size.Width, size.Height);
-            [DllImport("SDL2", EntryPoint = "SDL_SetWindowMaxiumumSize")]
-            static extern void _SetWindowMaximumSize(nint window, int w, int h);
+            _SetWindowAlwaysOnTop(window, alwaysOnTop ? 1 : 0);
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowAlwaysOnTop")]
+            static extern void _SetWindowAlwaysOnTop(nint window, int alwaysOnTop);
         }
         public static void Show(nint window)
         {
@@ -153,33 +109,74 @@ public static unsafe class SDL
             [DllImport("SDL2", EntryPoint = "SDL_RestoreWindow")]
             static extern void _RestoreWindow(nint window);
         }
-        public static void SetFullscreen(nint window, FullscreenState state)
+        public static void SetFullscreen(nint window, WindowFlag flags)
         {
-            var flags = state switch
-            {
-                FullscreenState.None => WindowFlag.None,
-                FullscreenState.Fullscreen => WindowFlag.Fullscreen,
-                FullscreenState.Borderless => WindowFlag.FullscreenDesktop,
-                _ => throw new ArgumentException("Unknown fullscreen state", nameof(state))
-            };
-            if(_SetWindowFullscreen(window, flags) != 0) throw new SDLException("Failed to set fullscreen");
+            if (_SetWindowFullscreen(window, (uint)flags) != 0) throw new SDLException("Failed to set fullscreen");
             [DllImport("SDL2", EntryPoint = "SDL_SetWindowFullscreen")]
-            static extern int _SetWindowFullscreen(nint window, WindowFlag flags);
+            static extern int _SetWindowFullscreen(nint window, uint flags);
         }
         public static void SetOpacity(nint window, float opacity)
         {
-            if(_SetWindowOpacity(window, opacity) != 0) throw new SDLException("Failed to set window opacity");
+            if(_SetWindowOpacity(window, opacity) != 0) throw new SDLException("Failed to set opacity");
             [DllImport("SDL2", EntryPoint = "SDL_SetWindowOpacity")]
             static extern int _SetWindowOpacity(nint window, float opacity);
+        }
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int HitTestHandler(nint window, nint area, nint data);
+        [SupportedOSPlatform("Windows")]
+        public static void SetHitTest(nint window, HitTestHandler? hitTest, nint data)
+        {
+            if(_SetWindowHitTest(window, hitTest != null ? Marshal.GetFunctionPointerForDelegate(hitTest) : 0, data) != 0) throw new SDLException("Failed to set hit test");
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowHitTest")]
+            static extern int _SetWindowHitTest(nint window, nint hitTest, nint data);
+        }
+        public static void Flash(nint window, FlashOperation operation)
+        {
+            if(_FlashWindow(window, (int) operation) != 0) throw new SDLException("Failed to flash window");
+            [DllImport("SDL2", EntryPoint = "SDL_FlashWindow")]
+            static extern int _FlashWindow(nint window, int operation);
+        }
+        public static uint GetID(nint window)
+        {
+            var ret = _GetWindowID(window);
+            if(ret == nint.Zero) throw new SDLException("Failed to get window id");
+            return ret;
+            [DllImport("SDL2", EntryPoint = "SDL_GetWindowID")]
+            static extern uint _GetWindowID(nint window);
+        }
+        public static void SetPosition(nint window, int x, int y)
+        {
+            _SetWindowPosition(window, x, y);
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowPosition")]
+            static extern void _SetWindowPosition(nint window, int x, int y);
+        }
+        public static void SetSize(nint window, int w, int h)
+        {
+            _SetWindowSize(window, w, h);
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowSize")]
+            static extern void _SetWindowSize(nint window, int w, int h);
+        }
+        public static void SetTitle(nint window, string title)
+        {
+            var uTitleLength = Encoding.UTF8.GetMaxByteCount(title.Length) + 1;
+            var uTitle = stackalloc byte[uTitleLength];
+            fixed (char* titlePtr = title)
+            {
+                Encoding.UTF8.GetBytes(titlePtr, title.Length, uTitle, uTitleLength - 1);
+            }
+            *(uTitle + uTitleLength - 1) = 0;
+            _SetWindowTitle(window, (nint) uTitle);
+            [DllImport("SDL2", EntryPoint = "SDL_SetWindowTitle")]
+            static extern void _SetWindowTitle(nint window, nint title);
         }
     }
     public static class Renderer
     {
-        public static nint Create(nint window, int index, RenderFlag flags)
+        public static nint Create(nint window, int index, RendererFlag flags)
         {
-            var renderer = _CreateRenderer(window, index, (uint) flags);
-            if(renderer == 0) throw new SDLException("Failed to create renderer");
-            return renderer;
+            var ret = _CreateRenderer(window, index, (uint) flags);
+            if(ret == nint.Zero) throw new SDLException("Failed to create renderer");
+            return ret;
             [DllImport("SDL2", EntryPoint = "SDL_CreateRenderer")]
             static extern nint _CreateRenderer(nint window, int index, uint flags);
         }
@@ -203,7 +200,7 @@ public static unsafe class SDL
         }
         public static void Clear(nint renderer)
         {
-            if(_RenderClear(renderer) != 0) throw new SDLException("Failed to clear screen");
+            if(_RenderClear(renderer) != 0) throw new SDLException("Failed to clear renderer");
             [DllImport("SDL2", EntryPoint = "SDL_RenderClear")]
             static extern int _RenderClear(nint renderer);
         }
@@ -211,62 +208,42 @@ public static unsafe class SDL
         {
             var uRect = stackalloc float[4];
             rect.ToData(uRect);
-            if(_RenderFillRectF(renderer, (nint)uRect) != 0) throw new SDLException("Failed to fill rectangle");
+            if(_RenderFillRectF(renderer, (nint) uRect) != 0) throw new SDLException("Failed to fill rectangle");
             [DllImport("SDL2", EntryPoint = "SDL_RenderFillRectF")]
             static extern int _RenderFillRectF(nint renderer, nint rect);
         }
-    }
-    public static class ScreenSaver
-    {
-        public static void Enable()
+        public static void DrawRectangle(nint renderer, Rectangle<float> rect)
         {
-            _EnableScreenSaver();
-            [DllImport("SDL2", EntryPoint = "SDL_EnableScreenSaver")]
-            static extern void _EnableScreenSaver();
+            var uRect = stackalloc float[4];
+            rect.ToData(uRect);
+            if(_RenderDrawRectF(renderer, (nint) uRect) != 0) throw new SDLException("Failed to fill rectangle");
+            [DllImport("SDL2", EntryPoint = "SDL_RenderDrawRectF")]
+            static extern int _RenderDrawRectF(nint renderer, nint rect);
         }
-        public static void Disable()
+        public static void SetDrawBlendMode(nint renderer, BlendMode mode)
         {
-            _DisableScreenSaver();
-            [DllImport("SDL2", EntryPoint = "SDL_DisableScreenSaver")]
-            static extern void _DisableScreenSaver();
+            if(_SetRenderDrawBlendMode(renderer, (int) mode) != 0) throw new SDLException("Failed to set draw blend mode");
+            [DllImport("SDL2", EntryPoint = "SDL_SetRenderDrawBlendMode")]
+            static extern int _SetRenderDrawBlendMode(nint renderer, int mode);
         }
     }
-    public static class Clipboard
+    public static class Event
     {
-        public static void SetText(string text)
+        public static bool Poll([NotNullWhen(true)] out IEvent? evt)
         {
-            var uTextSize = Encoding.UTF8.GetMaxByteCount(text.Length) + 1;
-            byte* uText = stackalloc byte[uTextSize];
-            fixed(char* textFixed = text)
+            var uEvt = stackalloc byte[56];
+            var ret = _PollEvent((nint)uEvt) == 1;
+            if(!ret) return false;
+            var type = *(EventType*)uEvt;
+            evt = type switch
             {
-                Encoding.UTF8.GetBytes(textFixed, text.Length, uText, uTextSize - 1);
-            }
-            *(uText + uTextSize - 1) = 0;
-            if(_SetClipboardText((nint) uText) != 0) throw new SDLException("Failed to set clipboard");
-            [DllImport("SDL2", EntryPoint = "SDL_SetClipboardText")]
-            static extern int _SetClipboardText(nint text);
+                EventType.Quit => QuitEvent.FromData(uEvt),
+                EventType.Window => WindowEvent.FromData(uEvt),
+                _ => UnknownEvent.FromData(uEvt)
+            };
+            return true;
+            [DllImport("SDL2", EntryPoint = "SDL_PollEvent")]
+            static extern int _PollEvent(nint evt);
         }
-        public static string? GetText()
-        {
-            var uText = _GetClipboardText();
-            if(uText == nint.Zero) throw new SDLException("Failed to get clipboard");
-            var text = Marshal.PtrToStringUTF8(uText);
-            if(string.IsNullOrEmpty(text)) return null;
-            return text;
-            [DllImport("SDL2", EntryPoint = "SDL_GetClipboardText")]
-            static extern nint _GetClipboardText();
-        }
-        public static void ClearText()
-        {
-            if(_SetClipboardText(0) != 0) throw new SDLException("Failed to set clipboard");
-            [DllImport("SDL2", EntryPoint = "SDL_SetClipboardText")]
-            static extern int _SetClipboardText(nint text);
-        }
-    }
-    public static string? GetError()
-    {
-        return Marshal.PtrToStringAnsi(_GetError());
-        [DllImport("SDL2", EntryPoint = "SDL_GetError")]
-        static extern nint _GetError();
     }
 }
