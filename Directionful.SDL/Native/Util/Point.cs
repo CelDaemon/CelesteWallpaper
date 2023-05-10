@@ -2,9 +2,9 @@ namespace Directionful.SDL.Util;
 
 public unsafe readonly partial record struct Point<T> where T : unmanaged
 {
-    public static Point<int> FromData(nint data)
+    internal static Point<T> FromData(nint data)
     {
-        var uData = (int*)data;
-        return new Point<int>(*uData, *(uData + 1));
+        var uData = (T*) data;
+        return new Point<T>(*uData, *(uData+1));
     }
 }
