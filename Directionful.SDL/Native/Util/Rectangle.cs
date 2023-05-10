@@ -2,7 +2,7 @@ namespace Directionful.SDL.Util;
 
 public unsafe readonly partial record struct Rectangle<T> where T : unmanaged
 {
-    public void ToData(T* data)
+    internal void ToData(T* data)
     {
         *data = X;
         *(data+1) = Y;
