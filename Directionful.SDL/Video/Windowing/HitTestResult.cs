@@ -1,4 +1,4 @@
-namespace Directionful.SDL.Video;
+namespace Directionful.SDL.Video.Windowing;
 
 public enum HitTestResult
 {

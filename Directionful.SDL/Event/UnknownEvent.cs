@@ -1,6 +1,3 @@
 namespace Directionful.SDL.Event;
 
-public readonly partial record struct UnknownEvent(EventType Type, uint Timestamp) : IEvent
-{
-    
-}
+public readonly partial record struct UnknownEvent(uint Timestamp) : IEvent;
