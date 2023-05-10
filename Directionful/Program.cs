@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime;
 using Directionful.SDL;
 using Directionful.SDL.Util;
@@ -19,7 +19,11 @@ while (running)
     evt.ProcessEvents();
     window.Hidden = false;
     renderer.Clear(Color.Black);
-    renderer.DrawRectangle(new Rectangle<float>(100, 100, 400, 400), Color.Purple);
-    renderer.DrawRectangle(new Rectangle<float>(300, 300, 400, 400), Color.Blue with {A = 100}, BlendMode.Blend);
+    var t = (float) MathF.Cos((float) stopwatch.Elapsed.TotalSeconds);
+    var rectMiddleWidth = window.Location.Width / 2 - 400 / 2;
+    var rectMiddleHeight = window.Location.Height / 2 - 400 / 2;
+    var rectOffset = 100 * t;
+    renderer.DrawRectangle(new Rectangle<float>(rectMiddleWidth - rectOffset, rectMiddleHeight - rectOffset, 400, 400), Color.Purple);
+    renderer.DrawRectangle(new Rectangle<float>(rectMiddleWidth + rectOffset, rectMiddleHeight + rectOffset, 400, 400), Color.Blue with {A = 100}, BlendMode.Blend);
     renderer.Present();
 }
