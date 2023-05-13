@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Runtime;
+using Directionful;
 using Directionful.SDL;
 using Directionful.SDL.Util;
-using Directionful.SDL.Video;
 using Directionful.SDL.Video.Windowing;
 // <3
 GCSettings.LatencyMode = GCLatencyMode.LowLatency;
@@ -14,16 +14,19 @@ using var evt = sdl.Event;
 var stopwatch = Stopwatch.StartNew();
 var running = true;
 evt.OnQuit += _ => running = false;
+var snow = new SnowRenderer(window, renderer);
 while (running)
 {
     evt.ProcessEvents();
     window.Hidden = false;
     renderer.Clear(Color.Black);
-    var t = (float) MathF.Cos((float) stopwatch.Elapsed.TotalSeconds);
-    var rectMiddleWidth = window.Location.Width / 2 - 400 / 2;
-    var rectMiddleHeight = window.Location.Height / 2 - 400 / 2;
-    var rectOffset = 100 * t;
-    renderer.DrawRectangle(new Rectangle<float>(rectMiddleWidth - rectOffset, rectMiddleHeight - rectOffset, 400, 400), Color.Purple);
-    renderer.DrawRectangle(new Rectangle<float>(rectMiddleWidth + rectOffset, rectMiddleHeight + rectOffset, 400, 400), Color.Blue with {A = 100}, BlendMode.Blend);
+    snow.Update();
+    snow.Render();
+    // var t = (float) MathF.Cos((float) stopwatch.Elapsed.TotalSeconds);
+    // var rectMiddleWidth = window.Location.Width / 2 - 400 / 2;
+    // var rectMiddleHeight = window.Location.Height / 2 - 400 / 2;
+    // var rectOffset = 100 * t;
+    // renderer.DrawRectangle(new Rectangle<float>(rectMiddleWidth - rectOffset, rectMiddleHeight - rectOffset, 400, 400), Color.Purple);
+    // renderer.DrawRectangle(new Rectangle<float>(rectMiddleWidth + rectOffset, rectMiddleHeight + rectOffset, 400, 400), Color.Blue with {A = 100}, BlendMode.Blend);
     renderer.Present();
 }
