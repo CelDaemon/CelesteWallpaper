@@ -28,7 +28,7 @@ public class SnowRenderer
                 _particles[i].Position.X + _direction.X * _particles[i].Speed *  ((float) 1/1000*16), // fix timing
                 _particles[i].Position.Y + MathF.Sin(_particles[i].Sin) * 100f * ((float) 1/1000*16)
             );
-            _particles[i].Sin += 16;
+            _particles[i].Sin += (float) 1/1000*16;
             if(_particles[i].Position.OutOfBounds(new Rectangle<float>(
                 -128,
                 -128,
