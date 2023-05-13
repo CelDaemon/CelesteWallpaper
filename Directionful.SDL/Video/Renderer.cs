@@ -43,7 +43,7 @@ public class Renderer : IDisposable
     private readonly nint _handle;
     private bool _disposed;
     private Color _drawColor;
-    public BlendMode _drawBlendMode;
+    private BlendMode _drawBlendMode;
     private Color DrawColor
     {
         get => _drawColor;
