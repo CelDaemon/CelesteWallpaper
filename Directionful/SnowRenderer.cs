@@ -9,6 +9,7 @@ public class SnowRenderer
 {
     public SnowRenderer(Window window, Renderer renderer)
     {
+        _random = new();
         _window = window;
         _renderer = renderer;
         Reset();
@@ -17,7 +18,7 @@ public class SnowRenderer
     {
         for(var i = 0; i < _particles.Length; i++)
         {
-            _particles[i].Reset(_window, _direction);
+            _particles[i].Reset(_random, _window, _direction);
         }
     }
     public void Update()
@@ -36,7 +37,7 @@ public class SnowRenderer
                 _window.Location.Height + 128 * 2
             )))
             {
-                _particles[i].Reset(_window, _direction);
+                _particles[i].Reset(_random, _window, _direction);
             }
         }
         _timer += (float) 1/1000*16;
@@ -70,30 +71,30 @@ public class SnowRenderer
     }
     private record struct Particle(float Scale, Vector2<float> Position, float Speed, float Sin, float Rotation, Color Color)
     {
-        public void Reset(Window window, Vector2<float> direction)
+        public void Reset(Random random, Window window, Vector2<float> direction)
         {
-            var num = MathF.Pow(Random.Shared.NextSingle(), 4);
+            var num = MathF.Pow(random.NextSingle(), 4);
             Scale = MathUtil.Map(num, 0f, 1f, 0.05f, 0.8f);
-            Speed = Scale * (Random.Shared.Next(5000 - 2500) + 2500);
+            Speed = Scale * (random.Next(5000 - 2500) + 2500);
             if (direction.X < 0f)
             {
-                Position = new Vector2<float>(window.Location.Width + 128, Random.Shared.NextSingle() * window.Location.Height);
+                Position = new Vector2<float>(window.Location.Width + 128, random.NextSingle() * window.Location.Height);
             } else if (direction.X > 0f)
             {
-                Position = new Vector2<float>(-128f, Random.Shared.NextSingle() * window.Location.Height);
+                Position = new Vector2<float>(-128f, random.NextSingle() * window.Location.Height);
             } else if (direction.Y > 0f)
             {
-                Position = new Vector2<float>(Random.Shared.NextSingle() * window.Location.Width, -128f);
+                Position = new Vector2<float>(random.NextSingle() * window.Location.Width, -128f);
             } else if (direction.Y < 0f)
             {
-                Position = new Vector2<float>(Random.Shared.NextSingle() * window.Location.Width, window.Location.Height + 128);
+                Position = new Vector2<float>(random.NextSingle() * window.Location.Width, window.Location.Height + 128);
             }
             else
             {
-                Position = new Vector2<float>(Random.Shared.NextSingle() * window.Location.Width, Random.Shared.NextSingle() * window.Location.Height);
+                Position = new Vector2<float>(random.NextSingle() * window.Location.Width, random.NextSingle() * window.Location.Height);
             }
-            Sin = Random.Shared.NextSingle() * 6.2831855f;
-            Rotation = Random.Shared.NextSingle() * 6.2831855f;
+            Sin = random.NextSingle() * 6.2831855f;
+            Rotation = random.NextSingle() * 6.2831855f;
             Color = Color.Lerp(Color.White, Color.Transparent, num * 0.8f);
         }
     }
@@ -105,4 +106,5 @@ public class SnowRenderer
     private readonly float _overlayAlpha = .45f;
     private readonly Particle[] _particles = new Particle[50];
     private readonly Renderer _renderer;
+    private readonly Random _random;
 }
