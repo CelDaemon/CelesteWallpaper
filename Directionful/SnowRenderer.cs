@@ -7,11 +7,13 @@ namespace Directionful;
 
 public class SnowRenderer
 {
-    public SnowRenderer(Window window, Renderer renderer)
+    public SnowRenderer(Window window, Renderer renderer, Texture snowTexture, Texture overlayTexture)
     {
         _random = new();
         _window = window;
         _renderer = renderer;
+        _snowTexture = snowTexture;
+        _overlayTexture = overlayTexture;
         Reset();
     }
     public void Reset()
@@ -61,13 +63,16 @@ public class SnowRenderer
                 (byte) MathF.Round(_particles[i].Color.B * num3),
                 (byte) MathF.Round(_particles[i].Color.A * num3)
             );
-            // Debug.WriteLine($"Trying to draw centered snow: {particle.Position}, {color}, {one * particle.Scale}, {(num > 1f ? num2 : particle.Rotation)}");
-            _renderer.DrawRectangle(new Rectangle<float>(_particles[i].Position.X - (one * _particles[i].Scale * 256).X / 2, _particles[i].Position.Y - (one * _particles[i].Scale * 256).Y / 2, (one * _particles[i].Scale * 256).X, (one * _particles[i].Scale * 256).Y), color, BlendMode.Blend);
+            _renderer.DrawTexture(_snowTexture, color, BlendMode.Blend, dest: new Rectangle<float>(_particles[i].Position.X - (one * _particles[i].Scale * 256).X / 2, _particles[i].Position.Y - (one * _particles[i].Scale * 256).Y / 2, (one * _particles[i].Scale * 256).X, (one * _particles[i].Scale * 256).Y),
+            angle: num > 1f ? num2 : _particles[i].Rotation);
         }
-        var num4 = _timer * 32f % 1920;
-        var num5 = _timer * 20f % 1080;
+        var num4 = _timer * 32f % _window.Location.Width;
+        var num5 = _timer * 20f % _window.Location.Height;
         var color2 = Color.White * (_alpha * _overlayAlpha);
-        // Debug.WriteLine($"Trying to draw overlay: {new Rectangle<float>(-(int)num4, -(int)num5, 1920, 1080)}, {color2}");
+        _renderer.DrawTexture(_overlayTexture, color2, BlendMode.Blend, new Rectangle<int>(0, 0, 1920, 1080), new Rectangle<float>(num4, num5, _window.Location.Width, _window.Location.Height));
+        _renderer.DrawTexture(_overlayTexture, color2, BlendMode.Blend, new Rectangle<int>(0, 0, 1920, 1080), new Rectangle<float>(num4 - _window.Location.Width, num5 - _window.Location.Height, _window.Location.Width, _window.Location.Height));
+        _renderer.DrawTexture(_overlayTexture, color2, BlendMode.Blend, new Rectangle<int>(0, 0, 1920, 1080), new Rectangle<float>(num4 - _window.Location.Width, num5, _window.Location.Width, _window.Location.Height));
+        _renderer.DrawTexture(_overlayTexture, color2, BlendMode.Blend, new Rectangle<int>(0, 0, 1920, 1080), new Rectangle<float>(num4, num5 - _window.Location.Height, _window.Location.Width, _window.Location.Height));
     }
     private record struct Particle(float Scale, Vector2<float> Position, float Speed, float Sin, float Rotation, Color Color)
     {
@@ -107,4 +112,6 @@ public class SnowRenderer
     private readonly Particle[] _particles = new Particle[50];
     private readonly Renderer _renderer;
     private readonly Random _random;
+    private readonly Texture _snowTexture;
+    private readonly Texture _overlayTexture;
 }

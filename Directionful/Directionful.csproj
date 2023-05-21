@@ -14,8 +14,10 @@
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../Directionful.SDL/Directionful.SDL.csproj"/>
-    <Content Include="assets/**/*"/>
+    <ProjectReference Include="../Directionful.SDL/Directionful.SDL.csproj" />
+    <Content Include="assets\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

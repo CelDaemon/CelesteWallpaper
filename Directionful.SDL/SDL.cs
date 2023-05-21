@@ -1,4 +1,5 @@
 using Directionful.SDL.Event;
+using Directionful.SDL.Image;
 using Directionful.SDL.Video;
 
 namespace Directionful.SDL;
@@ -10,6 +11,7 @@ public class SDL : IDisposable
         Native.SDL.Init(Native.Enum.InitFlag.Video);
         Video = new VideoSystem();
         Event = new EventSystem(Video);
+        Image = new ImageSystem();
     }
     ~SDL() => Dispose();
     public void Dispose()
@@ -22,5 +24,6 @@ public class SDL : IDisposable
     }
     public VideoSystem Video { get; init; }
     public EventSystem Event { get; init; }
+    public ImageSystem Image {get; init;}
     private bool _disposed;
 }
