@@ -226,6 +226,70 @@ internal static unsafe class SDL
             [DllImport("SDL2", EntryPoint = "SDL_SetRenderDrawBlendMode")]
             static extern int _SetRenderDrawBlendMode(nint renderer, int mode);
         }
+        public static void Copy(nint renderer, nint texture, Rectangle<int>? src = null, Rectangle<float>? dest = null, double angle = 0, Point<float>? center = null)
+        {
+            var uSrc = stackalloc int[4];
+            *uSrc = src?.X ?? 0;
+            *(uSrc+1) = src?.Y ?? 0;
+            *(uSrc+2) = src?.Width ?? 0;
+            *(uSrc+3) = src?.Height ?? 0;
+            
+            var uDest = stackalloc float[4];
+            *uDest = dest?.X ?? 0;
+            *(uDest+1) = dest?.Y ?? 0;
+            *(uDest+2) = dest?.Width ?? 0;
+            *(uDest+3) = dest?.Height ?? 0; 
+            var uCenter = stackalloc float[2];
+            *uCenter = center?.X ?? 0;
+            *(uCenter+1) = center?.Y ?? 0;
+            if(_RenderCopyExF(renderer, texture, src != null ? uSrc : (int*) 0, dest != null ? uDest : (float*) 0, angle, center != null ? uCenter : (float*) 0, 0) != 0) throw new SDLException("Failed to copy texture");
+            [DllImport("SDL2", EntryPoint = "SDL_RenderCopyExF")]
+            static extern int _RenderCopyExF(nint renderer, nint texture, int* src, float* dest, double angle, float* center, int flip);
+        }
+    }
+    public static class Surface
+    {
+        public static void Free(nint surface)
+        {
+            _FreeSurface(surface);
+            [DllImport("SDL2", EntryPoint = "SDL_FreeSurface")]
+            static extern void _FreeSurface(nint surface);
+        }
+    }
+    public static class Texture
+    {
+        public static nint CreateFromSurface(nint renderer, nint surface)
+        {
+            var ret = _CreateTextureFromSurface(renderer, surface);
+            if(ret == nint.Zero) throw new SDLException("Failed to create texture");
+            return ret;
+            [DllImport("SDL2", EntryPoint = "SDL_CreateTextureFromSurface")]
+            static extern nint _CreateTextureFromSurface(nint renderer, nint surface);
+        }
+        public static void Destroy(nint texture)
+        {
+            _DestroyTexture(texture);
+            [DllImport("SDL2", EntryPoint = "SDL_DestroyTexture")]
+            static extern void _DestroyTexture(nint texture);
+        }
+        public static void SetColorMod(nint texture, byte r, byte g, byte b)
+        {
+            if(_SetTextureColorMod(texture, r, g, b) != 0) throw new SDLException("Failed to set texture color");
+            [DllImport("SDL2", EntryPoint = "SDL_SetTextureColorMod")]
+            static extern int _SetTextureColorMod(nint texture, byte r, byte g, byte b);
+        }
+        public static void SetColorAlpha(nint texture, byte a)
+        {
+            if(_SetTextureAlphaMod(texture, a) != 0) throw new SDLException("Failed to set texture alpha");
+            [DllImport("SDL2", EntryPoint = "SDL_SetTextureAlphaMod")]
+            static extern int _SetTextureAlphaMod(nint texture, byte a);
+        } 
+        public static void SetBlendMode(nint texture, BlendMode mode)
+        {
+            if(_SetTextureBlendMode(texture, (int) mode) != 0) throw new SDLException("Failed to set texture blend mode");
+            [DllImport("SDL2", EntryPoint = "SDL_SetTextureBlendMode")]
+            static extern int _SetTextureBlendMode(nint texture, int a);
+        }
     }
     public static class Event
     {
