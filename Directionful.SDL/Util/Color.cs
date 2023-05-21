@@ -15,7 +15,8 @@ public readonly record struct Color(byte R, byte G, byte B, byte A = 255)
         return new Color(
             (byte) MathF.Round((color1.R * (1 - t)) + (color2.R * t)),
             (byte) MathF.Round((color1.G * (1 - t)) + (color2.G * t)),
-            (byte) MathF.Round((color1.B * (1 - t)) + (color2.B * t))
+            (byte) MathF.Round((color1.B * (1 - t)) + (color2.B * t)),
+            (byte) MathF.Round((color1.A * (1 - t)) + (color2.A * t))
         );
     }
     public static Color operator *(Color a, float b)

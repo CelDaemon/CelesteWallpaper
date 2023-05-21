@@ -29,6 +29,13 @@ public class Renderer : IDisposable
         if(filled) Native.SDL.Renderer.FillRectangle(_handle, rect);
         else Native.SDL.Renderer.DrawRectangle(_handle, rect);
     }
+    public void DrawTexture(Texture texture, Color color, BlendMode blend = BlendMode.None, Rectangle<int>? src = null, Rectangle<float>? dest = null, double angle = 0, Point<float>? center = null)
+    {
+        if(_disposed) throw new ObjectDisposedException(nameof(Renderer));
+        texture.Color = color;
+        texture.BlendMode = blend;
+        Native.SDL.Renderer.Copy(_handle, texture.Handle, src, dest, angle, center);
+    }
     public void Clear(Color color)
     {
         if(_disposed) throw new ObjectDisposedException(nameof(Renderer));
@@ -39,6 +46,14 @@ public class Renderer : IDisposable
     {
         if(_disposed) throw new ObjectDisposedException(nameof(Renderer));
         Native.SDL.Renderer.Present(_handle);
+    }
+    internal nint Handle
+    {
+        get
+        {
+            if(_disposed) throw new ObjectDisposedException(nameof(Renderer));
+            return _handle;
+        }
     }
     private readonly nint _handle;
     private bool _disposed;
