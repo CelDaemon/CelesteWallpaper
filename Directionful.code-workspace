@@ -13,6 +13,7 @@
             "**/.DS_Store": true,
             "**/Thumbs.db": true
         },
+        "dotnet.defaultSolution": "Directionful.sln",
     },
     "tasks": {
         "version": "2.0.0",
