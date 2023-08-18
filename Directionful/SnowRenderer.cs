@@ -23,15 +23,15 @@ public class SnowRenderer
             _particles[i].Reset(_random, _window, _direction);
         }
     }
-    public void Update(float deltaTime)
+    public void Update()
     {
         for(var i = 0; i < _particles.Length; i++)
         {
             _particles[i].Position = new Vector2<float>(
-                _particles[i].Position.X + _direction.X * _particles[i].Speed *  deltaTime, // fix timing
-                _particles[i].Position.Y + _direction.Y * _particles[i].Speed * deltaTime + MathF.Sin(_particles[i].Sin) * 100f * deltaTime
+                _particles[i].Position.X + _direction.X * _particles[i].Speed *  .016f, // fix timing
+                _particles[i].Position.Y + _direction.Y * _particles[i].Speed * .016f + MathF.Sin(_particles[i].Sin) * 100f * .016f
             );
-            _particles[i].Sin += deltaTime;
+            _particles[i].Sin += .016f;
             if(_particles[i].Position.OutOfBounds(new Rectangle<float>(
                 -128,
                 -128,
@@ -42,7 +42,7 @@ public class SnowRenderer
                 _particles[i].Reset(_random, _window, _direction);
             }
         }
-        _timer += deltaTime;
+        _timer += .016f;
     }
     public void Render()
     {
