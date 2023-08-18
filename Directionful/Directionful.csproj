@@ -15,7 +15,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../Directionful.SDL/Directionful.SDL.csproj" />
-    <Content Include="assets\**">
+    <Content Include="assets\**" Exclude="assets\**\*.kra">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
