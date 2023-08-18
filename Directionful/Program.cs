@@ -14,7 +14,7 @@ using var renderer = window.Renderer;
 using var evt = sdl.Event;
 var stopwatch = Stopwatch.StartNew();
 var running = true;
-evt.OnQuit += _ => running = false;
+evt.QuitEvent += (_, _) => running = false;
 using var snowSurface = sdl.Image.LoadImage("assets/snow.png");
 using var snowTexture = new Texture(renderer, snowSurface);
 using var overlaySurface = sdl.Image.LoadImage("assets/overlay.png");

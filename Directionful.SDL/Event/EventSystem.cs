@@ -19,7 +19,7 @@ public class EventSystem : IDisposable
             switch(evt)
             {
                 case QuitEvent quitEvt:
-                    OnQuit?.Invoke(quitEvt);
+                    QuitEvent?.Invoke(this, quitEvt);
                     break;
                 case WindowEvent windowEvt:
                     _video.GetWindow(windowEvt.WindowID).HandleEvent(windowEvt);
@@ -27,7 +27,7 @@ public class EventSystem : IDisposable
             }
         }
     }
-    public QuitHandler? OnQuit {get;set;}
+    public event EventHandler<QuitEvent>? QuitEvent;
     internal EventSystem(VideoSystem video) { _video = video; }
     private readonly VideoSystem _video;
     private bool _disposed;
