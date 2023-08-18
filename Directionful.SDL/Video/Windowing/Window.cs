@@ -85,6 +85,7 @@ public class Window : IDisposable
             if (_location.X != value.X || _location.Y != value.Y) Native.SDL.Window.SetPosition(_handle, value.X, value.Y);
             if (_location.Width != value.Width || _location.Height != value.Height) Native.SDL.Window.SetSize(_handle, value.Width, value.Height);
             _location = value;
+            LocationChangedEvent?.Invoke(this, _location);
         }
     }
     public bool Resizable
@@ -200,6 +201,7 @@ public class Window : IDisposable
         get => _id;
     }
     public Renderer Renderer {get; init;}
+    public event EventHandler<Rectangle<int>>? LocationChangedEvent;
     internal void HandleEvent(WindowEvent evt)
     {
         switch (evt.Type)
@@ -214,11 +216,15 @@ public class Window : IDisposable
                 _displayState = DisplayState.Normal;
                 break;
             case WindowEventType.Moved:
-                if (evt.Data1 != _location.X || evt.Data2 != _location.Y) _location = _location with { X = evt.Data1, Y = evt.Data2 };
+                if (evt.Data1 != _location.X || evt.Data2 != _location.Y) break;
+                _location = _location with { X = evt.Data1, Y = evt.Data2 };
+                LocationChangedEvent?.Invoke(this, _location);
                 break;
             case WindowEventType.SizeChanged:
             case WindowEventType.Resized:
-                if (evt.Data1 != _location.Width || evt.Data2 != _location.Height) _location = _location with { Width = evt.Data1, Height = evt.Data2 };
+                if (evt.Data1 == _location.Width && evt.Data2 == _location.Height) break;
+                _location = _location with { Width = evt.Data1, Height = evt.Data2 };
+                LocationChangedEvent?.Invoke(this, _location);
                 break;
         }
     }
