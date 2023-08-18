@@ -26,6 +26,7 @@ using var snowTexture = new Texture(renderer, snowSurface);
 using var overlaySurface = sdl.Image.LoadImage("assets/overlay.png");
 using var overlayTexture = new Texture(renderer, overlaySurface);
 var snow = new SnowRenderer(window, renderer, snowTexture, overlayTexture);
+var deltaTime = 1f;
 #if !DEBUG
 window.LocationChangedEvent += (_, _) =>
 {
@@ -35,12 +36,14 @@ window.LocationChangedEvent += (_, _) =>
 #endif
 while (running)
 {
+    var deltaTimeStamp = stopwatch.ElapsedMilliseconds;
     evt.ProcessEvents();
     renderer.Clear(Color.Black);
     if(!window.Hidden)
     {
-        snow.Update();
+        snow.Update(deltaTime);
         snow.Render();
     }
     renderer.Present();
+    deltaTime = ((float) stopwatch.ElapsedMilliseconds - deltaTimeStamp) / 1000;
 }
