@@ -25,6 +25,8 @@ using var snowSurface = sdl.Image.LoadImage("assets/snow.png");
 using var snowTexture = new Texture(renderer, snowSurface);
 using var overlaySurface = sdl.Image.LoadImage("assets/overlay.png");
 using var overlayTexture = new Texture(renderer, overlaySurface);
+using var logoSurface = sdl.Image.LoadImage("assets/logo.png");
+using var logoTexture = new Texture(renderer, logoSurface);
 var snow = new SnowRenderer(window, renderer, snowTexture, overlayTexture);
 var deltaTime = 1f;
 #if !DEBUG
@@ -38,12 +40,15 @@ while (running)
 {
     var deltaTimeStamp = stopwatch.ElapsedMilliseconds;
     evt.ProcessEvents();
+    if(!window.Hidden) snow.Update(deltaTime);
     renderer.Clear(Color.Black);
-    if(!window.Hidden)
-    {
-        snow.Update(deltaTime);
-        snow.Render();
-    }
+    var scalex = window.Location.Width / 1600f;
+    var scaley = window.Location.Height / 900f;
+    var minscale = MathF.Min(scalex, scaley);
+
+
+    renderer.DrawTexture(logoTexture, Color.White, BlendMode.None, dest: Rectangle<float>.Centered(new Vector2<float>(window.Location.Width / 2, window.Location.Height / 2), new Vector2<float>(1728 * minscale, 972 * minscale)));
+    snow.Render();
     renderer.Present();
     deltaTime = ((float) stopwatch.ElapsedMilliseconds - deltaTimeStamp) / 1000;
 }

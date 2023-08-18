@@ -38,4 +38,13 @@ public readonly record struct Vector2<T>(T X, T Y) where T : unmanaged, ICompara
             a.Y * b
         );
     }
+    public static Vector2<float> operator /(Vector2<T> a, int b)
+    {
+        if(a.X is not float x) throw new NotSupportedException();
+        if(a.Y is not float y) throw new NotSupportedException();
+        return new Vector2<float>(
+            x / b,
+            y / b
+        );
+    }
 }
