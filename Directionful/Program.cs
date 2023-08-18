@@ -9,29 +9,46 @@ using Directionful.SDL.Video.Windowing;
 GCSettings.LatencyMode = GCLatencyMode.LowLatency;
 using var sdl = new SDL();
 using var video = sdl.Video;
-using var window = new Window(video, "Directionful - I love you so muchhh Kay <3", new Rectangle<int>(320, 180, 1280, 720), hidden: true);
+using var window = new Window(video, "Directionful - I love you so muchhh Kay <3", new Rectangle<int>(320, 180, 1280, 720),
+#if !DEBUG
+ hidden: true
+#else
+ hidden: false
+#endif
+ );
 using var renderer = window.Renderer;
 using var evt = sdl.Event;
 var stopwatch = Stopwatch.StartNew();
 var running = true;
-evt.OnQuit += _ => running = false;
+evt.QuitEvent += (_, _) => running = false;
 using var snowSurface = sdl.Image.LoadImage("assets/snow.png");
 using var snowTexture = new Texture(renderer, snowSurface);
 using var overlaySurface = sdl.Image.LoadImage("assets/overlay.png");
 using var overlayTexture = new Texture(renderer, overlaySurface);
+using var logoSurface = sdl.Image.LoadImage("assets/logo.png");
+using var logoTexture = new Texture(renderer, logoSurface);
 var snow = new SnowRenderer(window, renderer, snowTexture, overlayTexture);
+var deltaTime = 1f;
+#if !DEBUG
+window.LocationChangedEvent += (_, _) =>
+{
+    snow.Reset();
+    window.Hidden = false;
+};
+#endif
 while (running)
 {
+    var deltaTimeStamp = stopwatch.ElapsedMilliseconds;
     evt.ProcessEvents();
-    window.Hidden = false;
+    if(!window.Hidden) snow.Update(deltaTime);
     renderer.Clear(Color.Black);
-    snow.Update();
+    var scalex = window.Location.Width / 1600f;
+    var scaley = window.Location.Height / 900f;
+    var minscale = MathF.Min(scalex, scaley);
+
+
+    renderer.DrawTexture(logoTexture, Color.White, BlendMode.None, dest: Rectangle<float>.Centered(new Vector2<float>(window.Location.Width / 2, window.Location.Height / 2), new Vector2<float>(1728 * minscale, 972 * minscale)));
     snow.Render();
-    // var t = (float) MathF.Cos((float) stopwatch.Elapsed.TotalSeconds);
-    // var rectMiddleWidth = window.Location.Width / 2 - 400 / 2;
-    // var rectMiddleHeight = window.Location.Height / 2 - 400 / 2;
-    // var rectOffset = 100 * t;
-    // renderer.DrawRectangle(new Rectangle<float>(rectMiddleWidth - rectOffset, rectMiddleHeight - rectOffset, 400, 400), Color.Purple);
-    // renderer.DrawRectangle(new Rectangle<float>(rectMiddleWidth + rectOffset, rectMiddleHeight + rectOffset, 400, 400), Color.Blue with {A = 100}, BlendMode.Blend);
     renderer.Present();
+    deltaTime = ((float) stopwatch.ElapsedMilliseconds - deltaTimeStamp) / 1000;
 }
