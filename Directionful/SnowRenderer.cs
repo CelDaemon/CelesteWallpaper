@@ -23,15 +23,15 @@ public class SnowRenderer
             _particles[i].Reset(_random, _window, _direction);
         }
     }
-    public void Update()
+    public void Update(float deltaTime)
     {
         for(var i = 0; i < _particles.Length; i++)
         {
             _particles[i].Position = new Vector2<float>(
-                _particles[i].Position.X + _direction.X * _particles[i].Speed *  ((float) 1/1000*16), // fix timing
-                _particles[i].Position.Y + MathF.Sin(_particles[i].Sin) * 100f * ((float) 1/1000*16)
+                _particles[i].Position.X + _direction.X * _particles[i].Speed *  deltaTime, // fix timing
+                _particles[i].Position.Y + _direction.Y * _particles[i].Speed * deltaTime + MathF.Sin(_particles[i].Sin) * 100f * deltaTime
             );
-            _particles[i].Sin += (float) 1/1000*16;
+            _particles[i].Sin += deltaTime;
             if(_particles[i].Position.OutOfBounds(new Rectangle<float>(
                 -128,
                 -128,
@@ -42,14 +42,15 @@ public class SnowRenderer
                 _particles[i].Reset(_random, _window, _direction);
             }
         }
-        _timer += (float) 1/1000*16;
+        _timer += deltaTime;
     }
     public void Render()
     {
         var num = MathUtil.Clamp(_direction.Length(), 0f, 20f);
         var num2 = 0f;
         var one = new Vector2<float>(1, 1);
-        if(num > 1f)
+        var highSpeed = num > 1f;
+        if(highSpeed)
         {
             num2 = _direction.Angle();
             one = new Vector2<float>(num, .2f + (1f - num / 20f) * .8f);
@@ -58,13 +59,15 @@ public class SnowRenderer
         for(var i = 0; i < _particles.Length; i++)
         {
             var color = new Color(
-                (byte) MathF.Round(_particles[i].Color.R * num3),
-                (byte) MathF.Round(_particles[i].Color.G * num3),
-                (byte) MathF.Round(_particles[i].Color.B * num3),
-                (byte) MathF.Round(_particles[i].Color.A * num3)
+                (byte) MathF.Round(_particles[i].Color.R * MathF.Max(num3, 1)),
+                (byte) MathF.Round(_particles[i].Color.G * MathF.Max(num3, 1)),
+                (byte) MathF.Round(_particles[i].Color.B * MathF.Max(num3, 1)),
+                (byte) MathF.Round(_particles[i].Color.A * MathF.Max(num3, 1))
             );
-            _renderer.DrawTexture(_snowTexture, color, BlendMode.Blend, dest: new Rectangle<float>(_particles[i].Position.X - (one * _particles[i].Scale * 256).X / 2, _particles[i].Position.Y - (one * _particles[i].Scale * 256).Y / 2, (one * _particles[i].Scale * 256).X, (one * _particles[i].Scale * 256).Y),
-            angle: num > 1f ? num2 : _particles[i].Rotation);
+            var rect = Rectangle<float>.Centered(_particles[i].Position, one * _particles[i].Scale * 256);
+            _renderer.DrawTexture(_snowTexture, color, BlendMode.Blend, dest: rect, angle: highSpeed ? num2 : _particles[i].Rotation);
+            // _renderer.DrawRectangle(rect, Color.Purple, filled: false);
+            // _renderer.DrawRectangle(new Rectangle<float>(_particles[i].Position.X - 5, _particles[i].Position.Y - 5, 10, 10), Color.Red);
         }
         var num4 = _timer * 32f % _window.Location.Width;
         var num5 = _timer * 20f % _window.Location.Height;
@@ -106,7 +109,7 @@ public class SnowRenderer
     private readonly Window _window;
     private readonly float _alpha = 1f;
     private readonly float _particleAlpha = 1f;
-    private readonly Vector2<float> _direction = new(-1f, 0f);
+    private readonly Vector2<float> _direction = new(-1f, 0);
     private float _timer;
     private readonly float _overlayAlpha = .45f;
     private readonly Particle[] _particles = new Particle[50];
