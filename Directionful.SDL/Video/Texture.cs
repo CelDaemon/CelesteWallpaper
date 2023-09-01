@@ -9,11 +9,11 @@ public class Texture : IDisposable
         if(_disposed) return;
         _disposed = true;
         GC.SuppressFinalize(this);
-        Native.SDL.Texture.Destroy(_handle);
+        SdlNative.Texture.Destroy(_handle);
     }
     public Texture(Renderer renderer, Surface surface)
     {
-        _handle = Native.SDL.Texture.CreateFromSurface(renderer.Handle, surface.Handle);
+        _handle = SdlNative.Texture.CreateFromSurface(renderer.Handle, surface.Handle);
     }
     internal nint Handle
     {
@@ -34,8 +34,8 @@ public class Texture : IDisposable
         {
             if(_disposed) throw new ObjectDisposedException(nameof(Texture));
             if(_color == value) return;
-            if(_color.R != value.R || _color.G != value.G || _color.B != value.B ) Native.SDL.Texture.SetColorMod(_handle, value.R, value.G, value.B);
-            if(_color.A != value.A) Native.SDL.Texture.SetColorAlpha(_handle, value.A);
+            if(_color.R != value.R || _color.G != value.G || _color.B != value.B ) SdlNative.Texture.SetColorMod(_handle, value.R, value.G, value.B);
+            if(_color.A != value.A) SdlNative.Texture.SetColorAlpha(_handle, value.A);
             _color = value;
         }
     }
@@ -50,7 +50,7 @@ public class Texture : IDisposable
         {
             if(_disposed) throw new ObjectDisposedException(nameof(Texture));
             if(_blendMode == value) return;
-            Native.SDL.Texture.SetBlendMode(_handle, value);
+            SdlNative.Texture.SetBlendMode(_handle, value);
             _blendMode = value;
         }
     }

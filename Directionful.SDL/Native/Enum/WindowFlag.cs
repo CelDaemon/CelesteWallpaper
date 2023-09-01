@@ -1,11 +1,11 @@
-namespace Directionful.SDL.Native.Enum;
+namespace Directionful.SDL.Enum;
 
 [Flags]
 internal enum WindowFlag : uint
 {
     None = 0x00000000,
     Fullscreen = 0x00000001,
-    OpenGL = 0x00000002,
+    OpenGl = 0x00000002,
     Shown = 0x00000004,
     Hidden = 0x00000008,
     Borderless = 0x00000010,
@@ -17,7 +17,7 @@ internal enum WindowFlag : uint
     MouseFocus = 0x00000400,
     FullscreenDesktop = Fullscreen | 0x00001000,
     Foreign = 0x00000800,
-    AllowHighDPI = 0x00002000,
+    AllowHighDpi = 0x00002000,
     MouseCapture = 0x00004000,
     AlwaysOnTop = 0x00008000,
     SkipTaskbar = 0x00010000,
