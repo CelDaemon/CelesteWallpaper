@@ -7,7 +7,7 @@ public class Surface : IDisposable
         if (_disposed) return;
         _disposed = true;
         GC.SuppressFinalize(this);
-        Native.SDL.Surface.Free(_handle);
+        SdlNative.Surface.Free(_handle);
     }
     internal Surface(nint handle)
     {

@@ -2,20 +2,19 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text;
+using Directionful.SDL.Enum;
 using Directionful.SDL.Event;
 using Directionful.SDL.Event.Windowing;
-using Directionful.SDL.Native.Enum;
 using Directionful.SDL.Util;
 using Directionful.SDL.Video;
-using Directionful.SDL.Video.Windowing;
 
-namespace Directionful.SDL.Native;
+namespace Directionful.SDL;
 
-internal static unsafe class SDL
+internal static unsafe class SdlNative
 {
     public static void Init(InitFlag flags)
     {
-        if (_Init((uint)flags) != 0) throw new SDLException("Failed to initialize SDL");
+        if (_Init((uint)flags) != 0) throw new SdlException("Failed to initialize SDL");
         [DllImport("SDL2", EntryPoint = "SDL_Init")]
         static extern int _Init(uint flags);
     }
@@ -50,7 +49,7 @@ internal static unsafe class SDL
             }
             *(uTitle + uTitleLength - 1) = 0;
             var ret = _CreateWindow((nint)uTitle, location.X, location.Y, location.Width, location.Height, (uint)flags);
-            if (ret == nint.Zero) throw new SDLException("Failed to create window");
+            if (ret == nint.Zero) throw new SdlException("Failed to create window");
             return ret;
             [DllImport("SDL2", EntryPoint = "SDL_CreateWindow")]
             static extern nint _CreateWindow(nint title, int x, int y, int w, int h, uint flags);
@@ -111,13 +110,13 @@ internal static unsafe class SDL
         }
         public static void SetFullscreen(nint window, WindowFlag flags)
         {
-            if (_SetWindowFullscreen(window, (uint)flags) != 0) throw new SDLException("Failed to set fullscreen");
+            if (_SetWindowFullscreen(window, (uint)flags) != 0) throw new SdlException("Failed to set fullscreen");
             [DllImport("SDL2", EntryPoint = "SDL_SetWindowFullscreen")]
             static extern int _SetWindowFullscreen(nint window, uint flags);
         }
         public static void SetOpacity(nint window, float opacity)
         {
-            if(_SetWindowOpacity(window, opacity) != 0) throw new SDLException("Failed to set opacity");
+            if(_SetWindowOpacity(window, opacity) != 0) throw new SdlException("Failed to set opacity");
             [DllImport("SDL2", EntryPoint = "SDL_SetWindowOpacity")]
             static extern int _SetWindowOpacity(nint window, float opacity);
         }
@@ -126,20 +125,20 @@ internal static unsafe class SDL
         [SupportedOSPlatform("Windows")]
         public static void SetHitTest(nint window, HitTestHandler? hitTest, nint data)
         {
-            if(_SetWindowHitTest(window, hitTest != null ? Marshal.GetFunctionPointerForDelegate(hitTest) : 0, data) != 0) throw new SDLException("Failed to set hit test");
+            if(_SetWindowHitTest(window, hitTest != null ? Marshal.GetFunctionPointerForDelegate(hitTest) : 0, data) != 0) throw new SdlException("Failed to set hit test");
             [DllImport("SDL2", EntryPoint = "SDL_SetWindowHitTest")]
             static extern int _SetWindowHitTest(nint window, nint hitTest, nint data);
         }
         public static void Flash(nint window, FlashOperation operation)
         {
-            if(_FlashWindow(window, (int) operation) != 0) throw new SDLException("Failed to flash window");
+            if(_FlashWindow(window, (int) operation) != 0) throw new SdlException("Failed to flash window");
             [DllImport("SDL2", EntryPoint = "SDL_FlashWindow")]
             static extern int _FlashWindow(nint window, int operation);
         }
-        public static uint GetID(nint window)
+        public static uint GetId(nint window)
         {
             var ret = _GetWindowID(window);
-            if(ret == nint.Zero) throw new SDLException("Failed to get window id");
+            if(ret == nint.Zero) throw new SdlException("Failed to get window id");
             return ret;
             [DllImport("SDL2", EntryPoint = "SDL_GetWindowID")]
             static extern uint _GetWindowID(nint window);
@@ -175,7 +174,7 @@ internal static unsafe class SDL
         public static nint Create(nint window, int index, RendererFlag flags)
         {
             var ret = _CreateRenderer(window, index, (uint) flags);
-            if(ret == nint.Zero) throw new SDLException("Failed to create renderer");
+            if(ret == nint.Zero) throw new SdlException("Failed to create renderer");
             return ret;
             [DllImport("SDL2", EntryPoint = "SDL_CreateRenderer")]
             static extern nint _CreateRenderer(nint window, int index, uint flags);
@@ -194,13 +193,13 @@ internal static unsafe class SDL
         }
         public static void SetDrawColor(nint renderer, Color color)
         {
-            if(_SetRenderDrawColor(renderer, color.R, color.G, color.B, color.A) != 0) throw new SDLException("Failed to set draw color");
+            if(_SetRenderDrawColor(renderer, color.R, color.G, color.B, color.A) != 0) throw new SdlException("Failed to set draw color");
             [DllImport("SDL2", EntryPoint = "SDL_SetRenderDrawColor")]
             static extern int _SetRenderDrawColor(nint renderer, byte r, byte g, byte b, byte a);
         }
         public static void Clear(nint renderer)
         {
-            if(_RenderClear(renderer) != 0) throw new SDLException("Failed to clear renderer");
+            if(_RenderClear(renderer) != 0) throw new SdlException("Failed to clear renderer");
             [DllImport("SDL2", EntryPoint = "SDL_RenderClear")]
             static extern int _RenderClear(nint renderer);
         }
@@ -208,7 +207,7 @@ internal static unsafe class SDL
         {
             var uRect = stackalloc float[4];
             rect.ToData(uRect);
-            if(_RenderFillRectF(renderer, (nint) uRect) != 0) throw new SDLException("Failed to fill rectangle");
+            if(_RenderFillRectF(renderer, (nint) uRect) != 0) throw new SdlException("Failed to fill rectangle");
             [DllImport("SDL2", EntryPoint = "SDL_RenderFillRectF")]
             static extern int _RenderFillRectF(nint renderer, nint rect);
         }
@@ -216,13 +215,13 @@ internal static unsafe class SDL
         {
             var uRect = stackalloc float[4];
             rect.ToData(uRect);
-            if(_RenderDrawRectF(renderer, (nint) uRect) != 0) throw new SDLException("Failed to fill rectangle");
+            if(_RenderDrawRectF(renderer, (nint) uRect) != 0) throw new SdlException("Failed to fill rectangle");
             [DllImport("SDL2", EntryPoint = "SDL_RenderDrawRectF")]
             static extern int _RenderDrawRectF(nint renderer, nint rect);
         }
         public static void SetDrawBlendMode(nint renderer, BlendMode mode)
         {
-            if(_SetRenderDrawBlendMode(renderer, (int) mode) != 0) throw new SDLException("Failed to set draw blend mode");
+            if(_SetRenderDrawBlendMode(renderer, (int) mode) != 0) throw new SdlException("Failed to set draw blend mode");
             [DllImport("SDL2", EntryPoint = "SDL_SetRenderDrawBlendMode")]
             static extern int _SetRenderDrawBlendMode(nint renderer, int mode);
         }
@@ -242,7 +241,7 @@ internal static unsafe class SDL
             var uCenter = stackalloc float[2];
             *uCenter = center?.X ?? 0;
             *(uCenter+1) = center?.Y ?? 0;
-            if(_RenderCopyExF(renderer, texture, src != null ? uSrc : (int*) 0, dest != null ? uDest : (float*) 0, angle, center != null ? uCenter : (float*) 0, 0) != 0) throw new SDLException("Failed to copy texture");
+            if(_RenderCopyExF(renderer, texture, src != null ? uSrc : (int*) 0, dest != null ? uDest : (float*) 0, angle, center != null ? uCenter : (float*) 0, 0) != 0) throw new SdlException("Failed to copy texture");
             [DllImport("SDL2", EntryPoint = "SDL_RenderCopyExF")]
             static extern int _RenderCopyExF(nint renderer, nint texture, int* src, float* dest, double angle, float* center, int flip);
         }
@@ -261,7 +260,7 @@ internal static unsafe class SDL
         public static nint CreateFromSurface(nint renderer, nint surface)
         {
             var ret = _CreateTextureFromSurface(renderer, surface);
-            if(ret == nint.Zero) throw new SDLException("Failed to create texture");
+            if(ret == nint.Zero) throw new SdlException("Failed to create texture");
             return ret;
             [DllImport("SDL2", EntryPoint = "SDL_CreateTextureFromSurface")]
             static extern nint _CreateTextureFromSurface(nint renderer, nint surface);
@@ -274,19 +273,19 @@ internal static unsafe class SDL
         }
         public static void SetColorMod(nint texture, byte r, byte g, byte b)
         {
-            if(_SetTextureColorMod(texture, r, g, b) != 0) throw new SDLException("Failed to set texture color");
+            if(_SetTextureColorMod(texture, r, g, b) != 0) throw new SdlException("Failed to set texture color");
             [DllImport("SDL2", EntryPoint = "SDL_SetTextureColorMod")]
             static extern int _SetTextureColorMod(nint texture, byte r, byte g, byte b);
         }
         public static void SetColorAlpha(nint texture, byte a)
         {
-            if(_SetTextureAlphaMod(texture, a) != 0) throw new SDLException("Failed to set texture alpha");
+            if(_SetTextureAlphaMod(texture, a) != 0) throw new SdlException("Failed to set texture alpha");
             [DllImport("SDL2", EntryPoint = "SDL_SetTextureAlphaMod")]
             static extern int _SetTextureAlphaMod(nint texture, byte a);
         } 
         public static void SetBlendMode(nint texture, BlendMode mode)
         {
-            if(_SetTextureBlendMode(texture, (int) mode) != 0) throw new SDLException("Failed to set texture blend mode");
+            if(_SetTextureBlendMode(texture, (int) mode) != 0) throw new SdlException("Failed to set texture blend mode");
             [DllImport("SDL2", EntryPoint = "SDL_SetTextureBlendMode")]
             static extern int _SetTextureBlendMode(nint texture, int a);
         }
@@ -297,7 +296,11 @@ internal static unsafe class SDL
         {
             var uEvt = stackalloc byte[56];
             var ret = _PollEvent((nint)uEvt) == 1;
-            if(!ret) return false;
+            if (!ret)
+            {
+                evt = null;
+                return false;
+            }
             var type = *(EventType*)uEvt;
             evt = type switch
             {

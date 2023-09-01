@@ -1,7 +1,7 @@
 using System.Runtime.Versioning;
+using Directionful.SDL.Enum;
 using Directionful.SDL.Event;
 using Directionful.SDL.Event.Windowing;
-using Directionful.SDL.Native.Enum;
 using Directionful.SDL.Util;
 
 namespace Directionful.SDL.Video.Windowing;
@@ -37,8 +37,8 @@ public class Window : IDisposable
             FullscreenState.BorderlessFullscreen => WindowFlag.FullscreenDesktop,
             _ => 0
         };
-        _handle = Native.SDL.Window.Create(title, location, flags);
-        _id = Native.SDL.Window.GetID(_handle);
+        _handle = SdlNative.Window.Create(title, location, flags);
+        _id = SdlNative.Window.GetId(_handle);
         _uHitTest = InternalHitTest;
 
         video.RegisterWindow(this);
@@ -52,17 +52,17 @@ public class Window : IDisposable
         GC.SuppressFinalize(this);
         Renderer.Dispose();
         _video.UnregisterWindow(this);
-        Native.SDL.Window.Destroy(_handle);
+        SdlNative.Window.Destroy(_handle);
     }
     public void Flash(bool untilFocussed)
     {
         if (_disposed) throw new ObjectDisposedException(nameof(Window));
-        Native.SDL.Window.Flash(_handle, untilFocussed ? FlashOperation.UntilFocussed : FlashOperation.Briefly);
+        SdlNative.Window.Flash(_handle, untilFocussed ? FlashOperation.UntilFocussed : FlashOperation.Briefly);
     }
     public void CancelFlash()
     {
         if (_disposed) throw new ObjectDisposedException(nameof(Window));
-        Native.SDL.Window.Flash(_handle, FlashOperation.Cancel);
+        SdlNative.Window.Flash(_handle, FlashOperation.Cancel);
     }
     public string Title
     {
@@ -71,7 +71,7 @@ public class Window : IDisposable
         {
             if (_disposed) throw new ObjectDisposedException(nameof(Window));
             if(_title == value) return;
-            Native.SDL.Window.SetTitle(_handle, value);
+            SdlNative.Window.SetTitle(_handle, value);
             _title = value;
         }
     }
@@ -82,8 +82,8 @@ public class Window : IDisposable
         {
             if (_disposed) throw new ObjectDisposedException(nameof(Window));
             if (_location == value) return;
-            if (_location.X != value.X || _location.Y != value.Y) Native.SDL.Window.SetPosition(_handle, value.X, value.Y);
-            if (_location.Width != value.Width || _location.Height != value.Height) Native.SDL.Window.SetSize(_handle, value.Width, value.Height);
+            if (_location.X != value.X || _location.Y != value.Y) SdlNative.Window.SetPosition(_handle, value.X, value.Y);
+            if (_location.Width != value.Width || _location.Height != value.Height) SdlNative.Window.SetSize(_handle, value.Width, value.Height);
             _location = value;
             LocationChangedEvent?.Invoke(this, _location);
         }
@@ -95,7 +95,7 @@ public class Window : IDisposable
         {
             if (_disposed) throw new ObjectDisposedException(nameof(Window));
             if (_resizable == value) return;
-            Native.SDL.Window.SetResizable(_handle, value);
+            SdlNative.Window.SetResizable(_handle, value);
             _resizable = value;
         }
     }
@@ -106,7 +106,7 @@ public class Window : IDisposable
         {
             if (_disposed) throw new ObjectDisposedException(nameof(Window));
             if (_borderless == value) return;
-            Native.SDL.Window.SetBordered(_handle, !value);
+            SdlNative.Window.SetBordered(_handle, !value);
             _borderless = value;
         }
     }
@@ -117,7 +117,7 @@ public class Window : IDisposable
         {
             if (_disposed) throw new ObjectDisposedException(nameof(Window));
             if (_alwaysOnTop == value) return;
-            Native.SDL.Window.SetAlwaysOnTop(_handle, value);
+            SdlNative.Window.SetAlwaysOnTop(_handle, value);
             _alwaysOnTop = value;
         }
     }
@@ -128,8 +128,8 @@ public class Window : IDisposable
         {
             if (_disposed) throw new ObjectDisposedException(nameof(Window));
             if (_hidden == value) return;
-            if (value) Native.SDL.Window.Hide(_handle);
-            else Native.SDL.Window.Show(_handle);
+            if (value) SdlNative.Window.Hide(_handle);
+            else SdlNative.Window.Show(_handle);
             _hidden = value;
         }
     }
@@ -143,13 +143,13 @@ public class Window : IDisposable
             switch (value)
             {
                 case DisplayState.Maximized:
-                    Native.SDL.Window.Maximize(_handle);
+                    SdlNative.Window.Maximize(_handle);
                     break;
                 case DisplayState.Minimized:
-                    Native.SDL.Window.Minimize(_handle);
+                    SdlNative.Window.Minimize(_handle);
                     break;
                 case DisplayState.Normal:
-                    Native.SDL.Window.Restore(_handle);
+                    SdlNative.Window.Restore(_handle);
                     break;
             }
             _displayState = value;
@@ -168,7 +168,7 @@ public class Window : IDisposable
                 FullscreenState.BorderlessFullscreen => WindowFlag.Borderless,
                 _ => WindowFlag.None
             };
-            Native.SDL.Window.SetFullscreen(_handle, flags);
+            SdlNative.Window.SetFullscreen(_handle, flags);
             _fullscreenState = value;
         }
     }
@@ -178,8 +178,9 @@ public class Window : IDisposable
         set
         {
             if (_disposed) throw new ObjectDisposedException(nameof(Window));
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (_opacity == value) return;
-            Native.SDL.Window.SetOpacity(_handle, value);
+            SdlNative.Window.SetOpacity(_handle, value);
             _opacity = value;
         }
     }
@@ -191,12 +192,12 @@ public class Window : IDisposable
         {
             if (_disposed) throw new ObjectDisposedException(nameof(Window));
             if (_hitTest == value) return;
-            if (value != null) Native.SDL.Window.SetHitTest(_handle, _uHitTest, nint.Zero);
-            else Native.SDL.Window.SetHitTest(_handle, null, 0);
+            if (value != null) SdlNative.Window.SetHitTest(_handle, _uHitTest, nint.Zero);
+            else SdlNative.Window.SetHitTest(_handle, null, 0);
             _hitTest = value;
         }
     }
-    public uint ID
+    public uint Id
     {
         get => _id;
     }
@@ -231,7 +232,7 @@ public class Window : IDisposable
     private readonly VideoSystem _video;
     private readonly nint _handle;
     private readonly uint _id;
-    private readonly Native.SDL.Window.HitTestHandler _uHitTest;
+    private readonly SdlNative.Window.HitTestHandler _uHitTest;
     private bool _disposed;
     private string _title;
     private Rectangle<int> _location;

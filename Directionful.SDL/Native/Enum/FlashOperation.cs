@@ -1,4 +1,4 @@
-namespace Directionful.SDL.Video.Windowing;
+namespace Directionful.SDL.Enum;
 
 internal enum FlashOperation
 {

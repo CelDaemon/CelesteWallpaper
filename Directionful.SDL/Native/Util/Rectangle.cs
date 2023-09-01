@@ -1,6 +1,6 @@
 namespace Directionful.SDL.Util;
 
-public unsafe readonly partial record struct Rectangle<T> where T : unmanaged
+public readonly unsafe partial record struct Rectangle<T> where T : unmanaged
 {
     internal void ToData(T* data)
     {
