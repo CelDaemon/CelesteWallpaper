@@ -1,4 +1,4 @@
-using Directionful.SDL.Native.Enum;
+using Directionful.SDL.Enum;
 using Directionful.SDL.Util;
 
 namespace Directionful.SDL.Video;
@@ -10,7 +10,7 @@ public class Renderer : IDisposable
         if(_disposed) return;
         _disposed = true;
         GC.SuppressFinalize(this);
-        Native.SDL.Renderer.Destroy(_handle);
+        SdlNative.Renderer.Destroy(_handle);
     }
     internal Renderer(nint window, int index, bool vsync = false, bool software = false, bool targetTexture = false)
     {
@@ -19,33 +19,33 @@ public class Renderer : IDisposable
         if (software) flags |= RendererFlag.Software;
         else flags |= RendererFlag.Accelerated;
         if (targetTexture) flags |= RendererFlag.TargetTexture;
-        _handle = Native.SDL.Renderer.Create(window, index, flags);
+        _handle = SdlNative.Renderer.Create(window, index, flags);
     }
     public void DrawRectangle(Rectangle<float> rect, Color color, BlendMode blendMode = BlendMode.None, bool filled = true)
     {
         if(_disposed) throw new ObjectDisposedException(nameof(Renderer));
         DrawColor = color;
         DrawBlendMode = blendMode;
-        if(filled) Native.SDL.Renderer.FillRectangle(_handle, rect);
-        else Native.SDL.Renderer.DrawRectangle(_handle, rect);
+        if(filled) SdlNative.Renderer.FillRectangle(_handle, rect);
+        else SdlNative.Renderer.DrawRectangle(_handle, rect);
     }
     public void DrawTexture(Texture texture, Color color, BlendMode blend = BlendMode.None, Rectangle<int>? src = null, Rectangle<float>? dest = null, double angle = 0, Point<float>? center = null)
     {
         if(_disposed) throw new ObjectDisposedException(nameof(Renderer));
         texture.Color = color;
         texture.BlendMode = blend;
-        Native.SDL.Renderer.Copy(_handle, texture.Handle, src, dest, angle, center);
+        SdlNative.Renderer.Copy(_handle, texture.Handle, src, dest, angle, center);
     }
     public void Clear(Color color)
     {
         if(_disposed) throw new ObjectDisposedException(nameof(Renderer));
         DrawColor = color;
-        Native.SDL.Renderer.Clear(_handle);
+        SdlNative.Renderer.Clear(_handle);
     }
     public void Present()
     {
         if(_disposed) throw new ObjectDisposedException(nameof(Renderer));
-        Native.SDL.Renderer.Present(_handle);
+        SdlNative.Renderer.Present(_handle);
     }
     internal nint Handle
     {
@@ -65,7 +65,7 @@ public class Renderer : IDisposable
         set
         {
             if(_drawColor == value) return;
-            Native.SDL.Renderer.SetDrawColor(_handle, value);
+            SdlNative.Renderer.SetDrawColor(_handle, value);
             _drawColor = value;
         }
     }
@@ -75,7 +75,7 @@ public class Renderer : IDisposable
         set
         {
             if(_drawBlendMode == value) return;
-            Native.SDL.Renderer.SetDrawBlendMode(_handle, value);
+            SdlNative.Renderer.SetDrawBlendMode(_handle, value);
             _drawBlendMode = value;
         }
     }

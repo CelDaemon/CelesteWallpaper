@@ -1,6 +1,6 @@
 namespace Directionful.SDL.Event;
 
-public unsafe readonly partial record struct QuitEvent : IEvent
+public readonly unsafe partial record struct QuitEvent
 {
     internal static QuitEvent FromData(byte* data)
     {

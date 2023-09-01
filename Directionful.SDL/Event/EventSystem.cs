@@ -15,7 +15,7 @@ public class EventSystem : IDisposable
     public void ProcessEvents()
     {
         if (_disposed) throw new ObjectDisposedException(nameof(Event));
-        while (Native.SDL.Event.Poll(out var evt)) {
+        while (SdlNative.Event.Poll(out var evt)) {
             switch(evt)
             {
                 case QuitEvent quitEvt:

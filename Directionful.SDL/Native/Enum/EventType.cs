@@ -1,4 +1,4 @@
-namespace Directionful.SDL.Native.Enum;
+namespace Directionful.SDL.Enum;
 
 public enum EventType : uint
 {
@@ -12,7 +12,7 @@ public enum EventType : uint
     LocaleChanged,
     DisplayEvent = 0x150,
     Window = 0x200,
-    SysWM,
+    SysWm,
     KeyDown,
     KeyUp,
     TextEditing,

@@ -1,13 +1,13 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Directionful.SDL.Native;
+namespace Directionful.SDL;
 
-internal static unsafe class SDLImage
+internal static unsafe class SdlImageNative
 {
     public static void Init()
     {
-        if(_Init(0) != 0) throw new SDLException("Failed to initialize SDL image library");
+        if(_Init(0) != 0) throw new SdlException("Failed to initialize SDL image library");
         [DllImport("SDL2_image", EntryPoint = "IMG_Init")]
         static extern int _Init(int flags);
     }
@@ -21,7 +21,7 @@ internal static unsafe class SDLImage
         }
         *(uPath + uPathLength - 1) = 0;
         var ret = _Load((nint)uPath);
-        if(ret == nint.Zero) throw new SDLException("Failed to load image");
+        if(ret == nint.Zero) throw new SdlException("Failed to load image");
         return ret;
         [DllImport("SDL2_image", EntryPoint = "IMG_Load")]
         static extern nint _Load(nint path);

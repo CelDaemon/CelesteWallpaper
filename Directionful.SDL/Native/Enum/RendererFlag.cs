@@ -1,4 +1,4 @@
-namespace Directionful.SDL.Native.Enum;
+namespace Directionful.SDL.Enum;
 
 public enum RendererFlag : uint
 {

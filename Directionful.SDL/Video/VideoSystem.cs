@@ -13,9 +13,9 @@ public class VideoSystem : IDisposable
     internal VideoSystem() { }
     internal void RegisterWindow(Window window)
     {
-        _windows.Add(window.ID, window);
+        _windows.Add(window.Id, window);
     }
-    internal void UnregisterWindow(Window window) => _windows.Remove(window.ID);
+    internal void UnregisterWindow(Window window) => _windows.Remove(window.Id);
     internal Window GetWindow(uint id) => _windows[id];
     private readonly Dictionary<uint, Window> _windows = new();
     private bool _disposed;

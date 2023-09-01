@@ -1,3 +1,3 @@
 namespace Directionful.SDL.Event;
 
-public readonly partial record struct QuitEvent(uint Timestamp);
+public readonly partial record struct QuitEvent(uint Timestamp) : IEvent;
