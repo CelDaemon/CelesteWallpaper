@@ -1,6 +1,6 @@
 namespace Directionful.SDL.Util;
 
-public unsafe readonly partial record struct Point<T> where T : unmanaged
+public readonly unsafe partial record struct Point<T> where T : unmanaged
 {
     internal static Point<T> FromData(nint data)
     {

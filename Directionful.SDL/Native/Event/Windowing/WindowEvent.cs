@@ -1,6 +1,6 @@
 namespace Directionful.SDL.Event.Windowing;
 
-public unsafe readonly partial record struct WindowEvent : IEvent
+public readonly unsafe partial record struct WindowEvent
 {
     internal static WindowEvent FromData(byte* data)
     {

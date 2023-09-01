@@ -13,10 +13,10 @@ public class ImageSystem : IDisposable
     public Surface LoadImage(string path)
     {
         if(_disposed) throw new ObjectDisposedException(nameof(ImageSystem));
-        return new Surface(Native.SDLImage.Load(path));
+        return new Surface(SdlImageNative.Load(path));
     }
     internal ImageSystem() {
-        Native.SDLImage.Init();
+        SdlImageNative.Init();
     }
     private bool _disposed;
 }

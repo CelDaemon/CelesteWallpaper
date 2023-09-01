@@ -1,6 +1,6 @@
 namespace Directionful.SDL.Event;
 
-public unsafe readonly partial record struct UnknownEvent : IEvent
+public readonly unsafe partial record struct UnknownEvent
 {
     internal static UnknownEvent FromData(byte* data)
     {

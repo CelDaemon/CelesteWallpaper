@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Runtime;
+﻿using System.Runtime;
 using Directionful;
 using Directionful.SDL;
 using Directionful.SDL.Util;
@@ -7,8 +6,9 @@ using Directionful.SDL.Video;
 using Directionful.SDL.Video.Windowing;
 // <3
 GCSettings.LatencyMode = GCLatencyMode.LowLatency;
-using var sdl = new SDL();
+using var sdl = new Sdl();
 using var video = sdl.Video;
+// ReSharper disable once StringLiteralTypo
 using var window = new Window(video, "Directionful - I love you so muchhh Kay <3", new Rectangle<int>(320, 180, 1280, 720),
 #if !DEBUG
  hidden: true
@@ -18,7 +18,6 @@ using var window = new Window(video, "Directionful - I love you so muchhh Kay <3
  );
 using var renderer = window.Renderer;
 using var evt = sdl.Event;
-var stopwatch = Stopwatch.StartNew();
 var running = true;
 evt.QuitEvent += (_, _) => running = false;
 using var snowSurface = sdl.Image.LoadImage("assets/snow.png");
@@ -40,12 +39,12 @@ while (running)
     evt.ProcessEvents();
     if(!window.Hidden) snow.Update();
     renderer.Clear(Color.Black);
-    var scalex = window.Location.Width / 1600f;
-    var scaley = window.Location.Height / 900f;
-    var minscale = MathF.Min(scalex, scaley);
+    var scaleX = window.Location.Width / 1600f;
+    var scaleY = window.Location.Height / 900f;
+    var minScale = MathF.Min(scaleX, scaleY);
 
 
-    renderer.DrawTexture(logoTexture, Color.White, BlendMode.None, dest: Rectangle<float>.Centered(new Vector2<float>(window.Location.Width / 2, window.Location.Height / 2), new Vector2<float>(1728 * minscale, 972 * minscale)));
+    renderer.DrawTexture(logoTexture, Color.White, dest: Rectangle<float>.Centered(new Vector2<float>((float) window.Location.Width / 2,  (float) window.Location.Height / 2), new Vector2<float>(1728 * minScale, 972 * minScale)));
     snow.Render();
     renderer.Present();
 }
