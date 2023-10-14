@@ -9,13 +9,7 @@ GCSettings.LatencyMode = GCLatencyMode.LowLatency;
 using var sdl = new Sdl();
 using var video = sdl.Video;
 // ReSharper disable once StringLiteralTypo
-using var window = new Window(video, "Directionful - I love you so muchhh Kay <3", new Rectangle<int>(320, 180, 1280, 720),
-#if !DEBUG
- hidden: true
-#else
- hidden: false
-#endif
- );
+using var window = new Window(video, "Directionful - I love you so muchhh Kay <3", new Rectangle<int>(320, 180, 1280, 720));
 using var renderer = window.Renderer;
 using var evt = sdl.Event;
 var running = true;
@@ -27,13 +21,6 @@ using var overlayTexture = new Texture(renderer, overlaySurface);
 using var logoSurface = sdl.Image.LoadImage("assets/logo.png");
 using var logoTexture = new Texture(renderer, logoSurface);
 var snow = new SnowRenderer(window, renderer, snowTexture, overlayTexture);
-#if !DEBUG
-window.LocationChangedEvent += (_, _) =>
-{
-    snow.Reset();
-    window.Hidden = false;
-};
-#endif
 while (running)
 {
     evt.ProcessEvents();
